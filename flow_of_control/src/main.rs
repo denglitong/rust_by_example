@@ -168,6 +168,41 @@ fn main() {
             println!("Cyan: {}, magenta: {}, yellow: {}, key: {}", c, m, y, k);
         }
     }
+
+    // pointers/ref
+    // dereferencing uses *
+    // destructuring uses &, ref and ref mut
+    let reference = &4;
+    match reference {
+        &val => println!("Got a value via destructing: {:?}", val),
+    }
+    match *reference {
+        val => println!("Got a value via dereferencing: {:?}", val),
+    }
+
+    let _not_a_reference = 3;
+    // Rust provides `ref` for exactly modifies the assignment so that a reference is created for the element,
+    // this reference is assigned
+    let ref _is_a_reference = 3;
+    let a = _is_a_reference; // a is &i32
+
+    // references can be retrieved via `ref` and `ref mut`
+    let value = 5;
+    let mut mut_value = 6;
+
+    match value {
+        ref r => {
+            let v = r; // v is &i32
+            println!("Got a reference to a value: {:?}", v);
+        }
+    }
+    match mut_value {
+        ref mut m => {
+            *m += 10;
+            println!("We added 10. `mut_value: {:?}`", m); // 16
+        }
+    }
+    println!("mut_value: {}", mut_value); // 16
 }
 
 // the compiler provides a dead_code lint that will warn about unused functions,
