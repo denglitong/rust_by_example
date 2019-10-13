@@ -34,6 +34,44 @@ fn main() {
 
     let one = || 1;
     println!("closure returning one: {}", one());
+
+    // closures can capture variables:
+    // by reference: &T
+    // by mutable reference: &mut T
+    // by value: T
+    let color = "green";
+    let print = || println!("`color: {}`", color);
+    print(); // call closures using the borrow
+    print();
+
+    let mut count = 1;
+    // a `mut` is needed for closure literal because a `&mut` is stored inside
+    let mut inc = || {
+        count += 1;
+        println!("`count`: {}", count);
+    };
+    inc(); // call the closure using the mut
+    inc();
+    let _reborrow = &mut count;
+
+    let movable = Box::new(3);
+    let consume = || {
+        println!("`movable`: {:?}", movable);
+        // std::mem::drop requires `T` so this must take by value
+        // a non-copy must move and so `movable` immediately moves into the closure
+        std::mem::drop(movable);
+    };
+    consume();
+    // consume();
+
+    // `Vec` has non-copy semantics
+    let haystack = vec![1, 2, 3];
+    // using move before vertical pipes forces closure to take ownership of captured variables
+    let contains = move |needle| haystack.contains(needle);
+
+    println!("{}", contains(&1));
+    println!("{}", contains(&4)); // moved closure can reuse, by variables moved in cannot reuse
+                                  // println!("{}", haystack.len());
 }
 
 // closures in Rust, also called lambda expression, are functions that can capture the enclosing environment
