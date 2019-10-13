@@ -72,9 +72,55 @@ fn main() {
     println!("{}", contains(&1));
     println!("{}", contains(&4)); // moved closure can reuse, by variables moved in cannot reuse
                                   // println!("{}", haystack.len());
+
+    // closure as parameters need to be type annotate, and closure's complete type use:
+    // Fn: the closure captures by reference &T, immutable borrow
+    // FnMut: the closure captures by mutable reference &mut T, mutable borrow
+    // FnOnce: the closure captures by value T, move
+    let greeting = "hello";
+    let mut farewell = "goodbye".to_owned();
+    let diary = || {
+        // `greeting` is by reference: requires `Fn`
+        println!("I said {}.", greeting);
+        // mutation forces `farewell` to be captured by mutable reference, now requires `FnMut`
+        farewell.push_str("!!!");
+        println!("Now I can sleep. zzzzz");
+
+        // manually calling drop forces `farewell` to be captured by value, now requires `FnOnce`
+        std::mem::drop(farewell);
+    };
+
+    apply(diary);
+
+    let double = |x| 2 * x;
+    println!("3 doubled: {}", apply_to_3(double));
+
+    let double_str = |str| {
+        let mut s: String = String::from(str);
+        s.push_str(String::from(str).as_str());
+        s
+    };
+    let a = "hello";
+    println!("double str: {}", double_str(a));
+    println!("a: {}", a);
 }
 
 // closures in Rust, also called lambda expression, are functions that can capture the enclosing environment
+// FnOnce: closure capture value T
+fn apply<F>(f: F)
+where
+    F: FnOnce(),
+{
+    f();
+}
+
+// Fn: mutable borrow
+fn apply_to_3<F>(f: F) -> i32
+where
+    F: Fn(i32) -> i32,
+{
+    f(3)
+}
 
 // methods are functions attached to objects
 #[derive(Debug)]
