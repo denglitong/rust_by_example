@@ -89,6 +89,8 @@ fn main() {
         // manually calling drop forces `farewell` to be captured by value, now requires `FnOnce`
         std::mem::drop(farewell);
     };
+    // 当闭包定义的时候，编译器会隐式创建一个匿名的struct将上下文变量保存在里面，然后对闭包实现Fn/FnMut/FnOnce
+    // 其中的一个trait, 此时闭包的type还是未知的，知道闭包被调用的时候type信息才会被保存
 
     apply(diary);
 
@@ -103,10 +105,21 @@ fn main() {
     let a = "hello";
     println!("double str: {}", double_str(a));
     println!("a: {}", a);
+
+    let x = String::from("7");
+    let print = || {
+        // need borrow here, can not be value moved use!
+        // the type of closure is dependent on how you capture scope variables
+        let a = &x;
+        println!("{}", a);
+    };
+    apply_mutable_borrow(print);
+    println!("x: {}", x);
 }
 
 // closures in Rust, also called lambda expression, are functions that can capture the enclosing environment
 // FnOnce: closure capture value T
+// 仅仅使用<F>的泛型类型来声明闭包的类型还是不够的，还需要使用Fn,FnMut,FnOnce来声明，这时类型信息就够了
 fn apply<F>(f: F)
 where
     F: FnOnce(),
@@ -120,6 +133,13 @@ where
     F: Fn(i32) -> i32,
 {
     f(3)
+}
+
+fn apply_mutable_borrow<F>(f: F)
+where
+    F: Fn(),
+{
+    f();
 }
 
 // methods are functions attached to objects
