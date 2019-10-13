@@ -37,4 +37,18 @@ fn main() {
     // this binding shadows the previous binding
     let long_lived_binding = 'a';
     println!("outer long: {}", long_lived_binding);
+
+    let a_binding;
+    {
+        let x = 2;
+        // initialize the binding
+        a_binding = x * x;
+    }
+    println!("a binding: {}", a_binding);
+
+    let another_binding;
+    // println!("another binding: {}", another_binding); // error, use of uninitialized binding
+
+    another_binding = 1;
+    println!("another binding: {}", another_binding);
 }
