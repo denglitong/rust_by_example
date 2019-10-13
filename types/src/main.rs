@@ -49,4 +49,14 @@ fn main() {
     println!("size of `f` in bytes: {}", std::mem::size_of_val(&f));
     // std::mem::size_of_val()
     // crate::module::fn()
+
+    let elem = 5u8;
+    // a this point the compiler doesn't know the exact type o `vec`,
+    // it just knows that it's a vector of something (`Vec<_>`)
+    let mut vec = Vec::new();
+    println!("{:?}", vec);
+
+    vec.push(elem);
+    // now the compiler knows that `vec` is a vector of `u8`
+    println!("{:?}", vec);
 }
