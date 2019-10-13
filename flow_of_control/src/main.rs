@@ -123,4 +123,26 @@ fn main() {
         }
     }
     println!("{:?}", names);
+
+    let number = 13;
+    match number {
+        // single value
+        1 => println!("One"),
+        // several values
+        2 | 3 | 5 | 7 | 11 => println!("This is a prime"),
+        // an inclusive range
+        13...19 => println!("A teen"),
+        // the rest of cases
+        _ => println!("Ain't special"),
+    }
+
+    let boolean = true;
+    let binary = match boolean {
+        false => 0,
+        true => 1,
+    };
+    println!("{} -> {}", boolean, binary);
+
+    let binary = if boolean { 1 } else { 0 };
+    println!("{} -> {}", boolean, binary);
 }
