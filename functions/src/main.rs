@@ -115,6 +115,35 @@ fn main() {
     };
     apply_mutable_borrow(print);
     println!("x: {}", x);
+
+    let closure = || println!("I'm a closure");
+    call_me(closure);
+    call_me(function_print);
+
+    let closure_add = |a, b| a + b;
+    println!("1 + 2 = {:?}", call_take_params(closure_add, 1, 2));
+    println!("1 + 2 = {:?}", call_take_params(function_add, 1, 2));
+}
+
+fn function_add(a: u32, b: u32) -> u32 {
+    a + b
+}
+
+// define function take closure, then function satisfy trait bound of that closure can be passed as parameter
+// Fn, FnMut, FnOnce trait dictate how a closure captures variables from the enclosing scope
+fn call_me<F: Fn()>(f: F) {
+    f();
+}
+
+fn call_take_params<F>(f: F, a: u32, b: u32) -> u32
+where
+    F: Fn(u32, u32) -> u32,
+{
+    f(a, b)
+}
+
+fn function_print() {
+    println!("I'm a function!");
 }
 
 // closures in Rust, also called lambda expression, are functions that can capture the enclosing environment
