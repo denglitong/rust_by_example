@@ -224,6 +224,20 @@ fn main() {
         (x, _) if x % 2 == 1 => println!("The first one is odd"),
         _ => println!("No correlation..."),
     }
+
+    println!("Tell me what type of person you are");
+    match age() {
+        0 => println!("I'm not born yet I guess"),
+        // range match and bound result to literal
+        n @ 1...12 => println!("I'm a child of age {:?}", n),
+        n @ 13..=19 => println!("I'm a teen of age {:?}", n),
+        // nothing bound. Return the result
+        n => println!("I'm an old person of age {:?}", n),
+    }
+}
+
+fn age() -> u32 {
+    15
 }
 
 // the compiler provides a dead_code lint that will warn about unused functions,
