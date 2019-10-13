@@ -36,4 +36,17 @@ fn main() {
             break;
         }
     }
+
+    'outer: loop {
+        println!("Entered the outer loop");
+
+        'inner: loop {
+            println!("Entered the inner loop");
+            // 内存loop可以直接跳出外层loop，前提是使用loop的'label: loop{}语法
+            break 'outer;
+        }
+
+        println!("This point will never be reached");
+    }
+    println!("Exited the outer loop");
 }
