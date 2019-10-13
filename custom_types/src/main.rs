@@ -140,6 +140,13 @@ impl List {
     }
 }
 
+static LANGUAGE: &str = "Rust";
+const THRESHOLD: i32 = 10;
+
+fn is_big(n: i32) -> bool {
+    n > THRESHOLD
+}
+
 fn main() {
     let name = "Peter";
     let age = 27;
@@ -222,4 +229,11 @@ fn main() {
 
     println!("linked list has length: {}", list.len());
     println!("{}", list.stringify());
+
+    let n = 16;
+    println!("This is {}", LANGUAGE);
+    println!("The threshold is {}", THRESHOLD);
+    println!("{} is {}", n, if is_big(n) { "Big" } else { "small" });
+
+    // THRESHOLD = 5; // error, cannot modify a `const`
 }
