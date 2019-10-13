@@ -20,7 +20,23 @@ fn main() {
     let pair = Pair(Box::new(1), Box::new(2));
     pair.destroy();
     // pair.destroy(); // has already moved and can not use again
+
+    fn function(i: i32) -> i32 {
+        i + 1
+    }
+    let closure_annotated = |i: i32| -> i32 { i + 1 };
+    let closure_inferred = |i| i + 1;
+
+    let i = 1;
+    println!("function: {}", function(i));
+    println!("closure_annotated: {}", closure_annotated(i));
+    println!("closure_inferred: {}", closure_inferred(i)); // infer type for closure
+
+    let one = || 1;
+    println!("closure returning one: {}", one());
 }
+
+// closures in Rust, also called lambda expression, are functions that can capture the enclosing environment
 
 // methods are functions attached to objects
 #[derive(Debug)]
