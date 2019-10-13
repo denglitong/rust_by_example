@@ -258,4 +258,21 @@ fn main() {
     mutable_binding += 1;
     println!("After mutation: {}", mutable_binding);
     // _immutable_binding += 1;
+
+    let long_lived_binding = 1;
+    {
+        let short_lived_binding = 2;
+        println!("inner short: {}", short_lived_binding);
+        // this binding shadows the outer one
+        let long_lived_binding = 5_f32;
+        println!("inner long: {}", long_lived_binding);
+    }
+
+    // println!("outer short: {}", short_lived_binding); // error
+
+    println!("outer long: {}", long_lived_binding);
+
+    // this binding shadows the previous binding
+    let long_lived_binding = 'a';
+    println!("outer long: {}", long_lived_binding);
 }
