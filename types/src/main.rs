@@ -35,4 +35,18 @@ fn main() {
     println!("1000 as a u8 is: {}", 1000_u32 as u8);
     // 232 - 127 - 1 -128 = -24
     println!("232 as a i8 is: {}", 232_u32 as i8);
+
+    let x = 1u8;
+    let y = 2u32;
+    let z = 3f32;
+    let i = 1;
+    let f = 1.0;
+
+    println!("size of `x` in bytes: {}", std::mem::size_of_val(&x));
+    println!("size of `y` in bytes: {}", std::mem::size_of_val(&y));
+    println!("size of `z` in bytes: {}", std::mem::size_of_val(&z));
+    println!("size of `i` in bytes: {}", std::mem::size_of_val(&i));
+    println!("size of `f` in bytes: {}", std::mem::size_of_val(&f));
+    // std::mem::size_of_val()
+    // crate::module::fn()
 }
