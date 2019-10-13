@@ -234,6 +234,64 @@ fn main() {
         // nothing bound. Return the result
         n => println!("I'm an old person of age {:?}", n),
     }
+
+    let optional = Some(7);
+    match optional {
+        Some(i) => println!("This is a really long string and `{:?}`", i),
+        _ => {}
+    }
+
+    let number = Some(7);
+    if let Some(i) = number {
+        println!("Matched `{:?}`!", i);
+    }
+
+    let letter: Option<i32> = None;
+    if let Some(i) = letter {
+        println!("Matched `{:?}`!", i);
+    } else {
+        println!("Didn't match a number. Let's go with a letter!");
+    }
+
+    let emotion: Option<i32> = None;
+    let i_like_letters = false;
+    if let Some(i) = emotion {
+        println!("Matched `{:?}`!", i);
+    } else if i_like_letters {
+        println!("Didn't match a number. Let's go with a letter!");
+    } else {
+        println!("I don't like letters. Let's go with an emoticon :)!")
+    }
+
+    let a = Foo2::Bar;
+    let b = Foo2::Baz;
+    let c = Foo2::Qux(100);
+
+    if let Foo2::Bar = a {
+        println!("a is foobar");
+    }
+    if let Foo2::Bar = b {
+        println!("b is foobar");
+    }
+    if let Foo2::Qux(value) = c {
+        println!("c is {}", value);
+    }
+
+    let a = Foo3::Bar;
+    if let Foo3::Bar = a {
+        println!("a is foobar");
+    }
+}
+
+//#[derive(PartialEq)]
+enum Foo3 {
+    Bar,
+}
+
+enum Foo2 {
+    Bar,
+    Baz,
+    Qux(u32),
 }
 
 fn age() -> u32 {
