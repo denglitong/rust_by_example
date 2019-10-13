@@ -1,4 +1,14 @@
 // Types
+
+type NanoSecond = u64;
+type Inch = u64;
+
+//#[allow(non_camel_case_types)]
+type u64_t = u64; // 类型名称命名需要使用双驼峰格式
+type U64T = u64;
+
+// 类型别名的用途主要用来节省样板代码
+
 fn main() {
     let decimal = 64.4321_f32; // also 64.4321f32
     println!("{}", decimal);
@@ -59,4 +69,14 @@ fn main() {
     vec.push(elem);
     // now the compiler knows that `vec` is a vector of `u8`
     println!("{:?}", vec);
+
+    // NanoSecond = u64 = Inch = u64_t
+    let nanoseconds: NanoSecond = 5 as u64_t;
+    let inches: Inch = 2 as u64_t;
+    println!(
+        "{} nanoseconds + {} inches = {} unit?",
+        nanoseconds,
+        inches,
+        nanoseconds + inches
+    );
 }
