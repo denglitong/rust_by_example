@@ -143,6 +143,17 @@ fn main() {
     let (a, b) = ("hello, ".to_owned(), "world".to_owned());
     let fn_append = create_fn_append();
     println!("a + b = {}", fn_append(a, b));
+
+    let vec1 = vec![1, 2, 3];
+    let vec2 = vec![4, 5, 6];
+    // Iterator::any return predicate if any item satisfied closure
+    println!("2 in vec1: {}", vec1.iter().any(|&x| x == 2));
+    println!("2 in vec2: {}", vec2.iter().any(|&x| x == 2));
+
+    let array1 = [1, 2, 3];
+    let array2 = [4, 5, 6];
+    println!("2 in array1: {}", array1.iter().any(|&x| x == 2));
+    println!("2 in array2: {}", array2.iter().any(|&x| x == 2));
 }
 
 // closure as output parameters: Rust currently only supports returning concrete types(non-generic)
