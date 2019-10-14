@@ -1,3 +1,6 @@
+// allow assign a never typ
+//#![feature(never_type)]
+
 fn main() {
     fizzbuzz(100);
 
@@ -192,6 +195,39 @@ fn main() {
         .filter(|&n_squared| is_odd(n_squared)) // that are odd
         .fold(0, |acc, n_squared| acc + n_squared); // sum them
     println!("functional style: {}", sum_of_squared_odd_numbers);
+
+    // foo();
+    let a: () = some_fn();
+    println!("This function returns and you can see this line");
+
+    // let x: ! = panic!("This call never returns");
+    // println!("You will never see this line!");
+
+    fn sum_odd_numbers(up_to: u32) -> u32 {
+        let mut acc = 0;
+        for i in 0..up_to {
+            let addition: u32 = match i % 2 == 1 {
+                true => i,
+                false => continue,
+            };
+            acc += addition;
+        }
+        acc
+    }
+    println!(
+        "Sum of odd numbers up to 9 (excluding): {}",
+        sum_odd_numbers(9)
+    );
+}
+
+fn some_fn() {
+    ()
+}
+
+// diverging function never return, they are marked using !, which is an empty type
+fn foo() -> ! {
+    panic!("This call never returns.");
+    // println!("This call never returns"); // Function returns () instead of !
 }
 
 // higher order functions
