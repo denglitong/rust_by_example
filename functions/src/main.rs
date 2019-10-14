@@ -169,6 +169,34 @@ fn main() {
     let array2 = [4, 5, 6];
     println!("2 in array1: {:?}", array1.iter().find(|&&x| x == 2));
     println!("2 in array2: {:?}", array2.iter().find(|&&x| x == 2));
+
+    println!("Find the sum of all the squared odd numbers under 1000");
+    let upper = 1000;
+
+    // imperative approach
+    let mut acc = 0;
+    for n in 0.. {
+        let n_squared = n * n;
+        if n_squared >= upper {
+            break;
+        } else if is_odd(n_squared) {
+            acc += n_squared;
+        }
+    }
+    println!("imperative style: {}", acc);
+
+    // functional approach
+    let sum_of_squared_odd_numbers: u32 = (0..)
+        .map(|n| n * n) // all natural numbers squared
+        .take_while(|&n_squared| n_squared < upper) // below upper limit
+        .filter(|&n_squared| is_odd(n_squared)) // that are odd
+        .fold(0, |acc, n_squared| acc + n_squared); // sum them
+    println!("functional style: {}", sum_of_squared_odd_numbers);
+}
+
+// higher order functions
+fn is_odd(n: u32) -> bool {
+    n % 2 == 1
 }
 
 // closure as output parameters: Rust currently only supports returning concrete types(non-generic)
