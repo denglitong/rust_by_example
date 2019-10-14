@@ -1,3 +1,5 @@
+mod my_mod_file;
+
 fn main() {
     function();
     my_mod::function();
@@ -37,6 +39,11 @@ fn main() {
     function();
 
     my::indirect_call();
+
+    my_mod_file::function();
+    function();
+    my_mod_file::indirect_access();
+    my_mod_file::nested::function();
 }
 
 mod cool {
