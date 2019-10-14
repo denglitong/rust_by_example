@@ -8,6 +8,35 @@ fn main() {
 
     // can not see it...
     // crate::my_mod::public_function_in_my_mod();
+    let open_box = my::OpenBox {
+        contents: "public information",
+    };
+    println!("The open box contains: {}", open_box.contents);
+
+    // public struct with private fields cannot be constructed using field names.
+    // let closed_box = my::CloseBox {
+    //     contents: "classified information",
+    // };
+
+    // however, structs with private fields can be created using public new fn
+    let _closed_box = my::CloseBox::new("classified information");
+}
+
+mod my {
+    pub struct OpenBox<T> {
+        pub contents: T,
+    }
+
+    #[allow(dead_code)]
+    pub struct CloseBox<T> {
+        contents: T,
+    }
+
+    impl<T> CloseBox<T> {
+        pub fn new(contents: T) -> CloseBox<T> {
+            CloseBox { contents }
+        }
+    }
 }
 
 mod my_mod {
