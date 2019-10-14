@@ -123,6 +123,58 @@ fn main() {
     let closure_add = |a, b| a + b;
     println!("1 + 2 = {:?}", call_take_params(closure_add, 1, 2));
     println!("1 + 2 = {:?}", call_take_params(function_add, 1, 2));
+
+    let fn_plain = create_fn();
+    fn_plain();
+    let mut fn_mut = create_fnmut();
+    fn_mut();
+
+    fn_mut = Box::new(|| {
+        let text = "modify fn_mut".to_owned();
+        println!("{}", text);
+    });
+    fn_mut();
+
+    let (a, b) = (1, 2);
+    let fn_add = create_fn_add();
+    println!("1 + 2 = {}", fn_add(a, b));
+    println!("a: {}, b: {}", a, b);
+
+    let (a, b) = ("hello, ".to_owned(), "world".to_owned());
+    let fn_append = create_fn_append();
+    println!("a + b = {}", fn_append(a, b));
+}
+
+// closure as output parameters: Rust currently only supports returning concrete types(non-generic)
+// anonymous closure by definition is unknown types so returning a closure is only possible by making it concrete
+// this can be done via boxing.
+// Fn: normal
+// FnMut: normal
+// FnOnce: there are some unusual things here, so the FnBox type is currently needed, and is unstable
+// this is expected to change in future
+
+// Beyond this, the move keyword must be used for returning closure, because any captures by reference
+// would by dropped as soon as the function existed.
+fn create_fn() -> Box<Fn()> {
+    let text = "Fn".to_owned();
+    Box::new(move || println!("This is a: {}", text))
+}
+
+fn create_fnmut() -> Box<FnMut()> {
+    let text = "FnMut".to_owned();
+    Box::new(move || println!("This is a: {}", text))
+}
+
+fn create_fn_add() -> Box<Fn(u32, u32) -> u32> {
+    Box::new(move |a, b| a + b)
+}
+
+fn create_fn_append() -> Box<FnOnce(String, String) -> String> {
+    Box::new(move |a, b| {
+        let mut s = a;
+        s.push_str(b.as_str());
+        s
+    })
 }
 
 fn function_add(a: u32, b: u32) -> u32 {
