@@ -20,6 +20,33 @@ fn main() {
 
     // however, structs with private fields can be created using public new fn
     let _closed_box = my::CloseBox::new("classified information");
+
+    indirect_access();
+    other_function();
+
+    another_function();
+    println!("Entering block");
+    {
+        // this is equivalent to `use deeply::nested::function as function`.
+        // this `function` will shadow outer one.
+        use crate::deeply::nested::function;
+        function();
+
+        println!("Leaving block");
+    }
+    function();
+}
+
+use deeply::nested::function as another_function;
+use my_mod::function as other_function;
+use my_mod::indirect_access;
+
+mod deeply {
+    pub mod nested {
+        pub fn function() {
+            println!("called `deeply::nested::function()`");
+        }
+    }
 }
 
 mod my {
