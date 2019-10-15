@@ -66,6 +66,32 @@ fn main() {
     let x = Val { val: 3.0 };
     let y = GenVal { gen_val: 3i32 };
     println!("{}, {}", x.value(), y.value());
+
+    let empty = Empty;
+    let null = Null;
+
+    // deallocate `empty` and `null`
+    // Empty.double_drop<Null> Empty is caller, Null is generic type for trait
+    empty.double_drop(null);
+
+    // empty;
+    // null;
+}
+
+// non-copyable types
+struct Empty;
+struct Null;
+
+// a trait generic over `T`
+trait DoubleDrop<T> {
+    fn double_drop(self, _: T);
+}
+
+// Implement `DoubleDrop<T>` for any generic parameter `T` and caller U,
+// the caller is the second type specifier
+impl<T, U> DoubleDrop<T> for U {
+    // this method takes ownership of both passed arguments, deallocate both
+    fn double_drop(self, t: T) {}
 }
 
 // 具有 Copy trait 的 type，说明其数据存储在栈上，数据赋值给其他变量不会发生所有权的转移（其实是复制给了其他变量）
