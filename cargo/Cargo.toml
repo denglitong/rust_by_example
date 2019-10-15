@@ -3,6 +3,8 @@ name = "cargo"
 version = "0.1.0"
 authors = ["denglitong <litongdeng@gmail.com>"]
 edition = "2018"
+# specify the default binary to run if multiple ones
+default-run = "cargo"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
