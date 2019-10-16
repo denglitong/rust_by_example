@@ -154,6 +154,7 @@ fn main() {
         &number_1,
         &number_2,
         container.contains(&number_1, &number_2),
+        // AContains::contains(&container, &number_1, &number_2),
     );
 
     println!("First number: {}", container.first());
