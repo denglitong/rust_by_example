@@ -1,6 +1,8 @@
 use std::fmt::{Debug, Display};
 use std::hash::Hash;
 
+use std::marker::PhantomData;
+
 // a generic function takes an argument T for any type
 fn foo<T>(arg: T) {}
 
@@ -160,6 +162,35 @@ fn main() {
     println!("First number: {}", container.first());
     println!("Last number: {}", container.last());
     println!("The difference is: {}", a_difference(&container));
+
+    let _tuple1: PhantomTuple<char, f32> = PhantomTuple('Q', PhantomData);
+    let _tuple2: PhantomTuple<char, f64> = PhantomTuple('Q', PhantomData);
+
+    let _struct1: PhantomStruct<char, f32> = PhantomStruct {
+        first: 'Q',
+        phandom: PhantomData,
+    };
+    let _struct2: PhantomStruct<char, f64> = PhantomStruct {
+        first: 'Q',
+        phandom: PhantomData,
+    };
+
+    // compile-time error! type mismatch so these cannot be compared
+    // println!("_tuple1 == _tuple2 yields: {}", _tuple1 == _tuple2); // expected f32, found f64
+    // println!("_struct1 == _struct2 yields: {}", _struct1 == _struct2);
+}
+
+// a phantom tuple struct which is generic over `A` with hidden parameter `B`
+#[derive(PartialEq)]
+struct PhantomTuple<A, B>(A, PhantomData<B>);
+
+// storage is allocated for generic type `A`, but not for `B`.
+// Therefore, `B` cannot be used in computations.
+
+#[derive(PartialEq)]
+struct PhantomStruct<A, B> {
+    first: A,
+    phandom: PhantomData<B>,
 }
 
 // associated types
