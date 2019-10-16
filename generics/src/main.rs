@@ -119,6 +119,37 @@ fn main() {
 
     let vec = vec![1, 2, 3];
     vec.print_in_option();
+
+    let age = Years(5);
+    let age_days = age.to_days();
+    println!("old enough {}", old_enough(&age));
+    println!("old enough {}", old_enough(&age_days.to_years()));
+    //println!("old enough {}", old_enough(&age_days));
+
+    // obtain base type value of newtype value
+    let years = Years(42);
+    let year_as_primitive = years.0;
+    println!("year as primitive: {}", year_as_primitive);
+}
+
+// new type idiom, gives compile time guarantees that the right type of value match
+struct Years(i64);
+struct Days(i64);
+
+impl Years {
+    pub fn to_days(&self) -> Days {
+        Days(self.0 * 365)
+    }
+}
+
+impl Days {
+    pub fn to_years(&self) -> Years {
+        Years(self.0 / 365)
+    }
+}
+
+fn old_enough(age: &Years) -> bool {
+    age.0 >= 18
 }
 
 trait PrintInOption {
