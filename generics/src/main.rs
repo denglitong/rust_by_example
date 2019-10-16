@@ -116,6 +116,26 @@ fn main() {
     //compare_prints(&array);
 
     compare_types(&array, &vec);
+
+    let vec = vec![1, 2, 3];
+    vec.print_in_option();
+}
+
+trait PrintInOption {
+    fn print_in_option(self);
+}
+
+impl<T> PrintInOption for T
+where
+    Option<T>: Debug,
+{
+    // we want `Option<T>: Debug` as our bound because that is what's being printed,
+    // that is, print needs type Option<T>, doing otherwise would be using the wrong bound.
+    // the self arg will take `T` ownership,
+    // and `T` can be caller directly to call trait function without explicit implement
+    fn print_in_option(self) {
+        println!("{:?}", Some(self));
+    }
 }
 
 fn compare_prints<T>(t: &T)
