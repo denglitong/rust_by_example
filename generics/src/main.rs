@@ -2,6 +2,7 @@ use std::fmt::{Debug, Display};
 use std::hash::Hash;
 
 use std::marker::PhantomData;
+use std::ops::Add;
 
 // a generic function takes an argument T for any type
 fn foo<T>(arg: T) {}
@@ -178,6 +179,33 @@ fn main() {
     // compile-time error! type mismatch so these cannot be compared
     // println!("_tuple1 == _tuple2 yields: {}", _tuple1 == _tuple2); // expected f32, found f64
     // println!("_struct1 == _struct2 yields: {}", _struct1 == _struct2);
+
+    let one_foot: Length<Inch> = Length(12.0, PhantomData);
+    let one_meter: Length<Mm> = Length(1000.0, PhantomData);
+
+    let two_feet = one_foot + one_foot;
+    let two_meter = one_meter + one_meter;
+    println!("one foot + one_foot = {:?} in", two_feet.0);
+    println!("one meter + one_meter = {:?} in", two_meter.0);
+
+    // type mismatch
+    //let one_feter = one_foot + one_meter;
+}
+
+#[derive(Debug, Copy, Clone)]
+enum Inch {}
+#[derive(Debug, Copy, Clone)]
+enum Mm {}
+
+#[derive(Debug, Copy, Clone)]
+struct Length<Unit>(f64, PhantomData<Unit>);
+
+impl<Unit> std::ops::Add for Length<Unit> {
+    type Output = Length<Unit>;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Length(self.0 + rhs.0, PhantomData)
+    }
 }
 
 // a phantom tuple struct which is generic over `A` with hidden parameter `B`
