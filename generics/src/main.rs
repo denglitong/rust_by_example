@@ -107,6 +107,32 @@ fn main() {
     println!("A cardinal is {}", red(&cardinal));
     println!("A blue jay is {}", blue(&blue_jay));
     // println!("A turkey is {}", red(&_turkey));
+
+    let string = "words";
+    let array = [1, 2, 3];
+    let vec = vec![1, 2, 3];
+
+    compare_prints(&string);
+    //compare_prints(&array);
+
+    compare_types(&array, &vec);
+}
+
+fn compare_prints<T>(t: &T)
+where
+    T: Debug + Display,
+{
+    println!("Debug: `{:?}`", t);
+    println!("Display: `{:?}`", t);
+}
+
+fn compare_types<T, U>(t: &T, u: &U)
+where
+    T: Debug,
+    U: Debug,
+{
+    println!("t: `{:?}`", t);
+    println!("u: `{:?}`", u);
 }
 
 struct Cardinal;
