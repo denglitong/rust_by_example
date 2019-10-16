@@ -1,3 +1,6 @@
+use std::fmt::{Debug, Display};
+use std::hash::Hash;
+
 // a generic function takes an argument T for any type
 fn foo<T>(arg: T) {}
 
@@ -76,6 +79,76 @@ fn main() {
 
     // empty;
     // null;
+
+    // Error! Vec<T> does not implement `Display`
+    // let s = BS(vec![1]);
+
+    let rectangle = Rectangle {
+        length: 3.0,
+        height: 4.0,
+    };
+    let _triangle = Triangle {
+        length: 3.0,
+        height: 4.0,
+    };
+
+    print_debug(&rectangle);
+    print_debug_where_clauses(&rectangle);
+    println!("Area: {}", area(&rectangle));
+
+    // print_debug(&_triangle);
+    // the trait `HasArea` is not implemented for `Triangle`
+    // println!("Area: {}", area(&_triangle));
+}
+
+struct BS<T: Display>(T);
+
+// where clauses
+struct WBS<T>(T)
+where
+    T: Display;
+
+trait HasArea {
+    fn area(&self) -> f64;
+}
+
+impl HasArea for Rectangle {
+    fn area(&self) -> f64 {
+        self.length * self.height
+    }
+}
+
+#[derive(Debug)]
+struct Rectangle {
+    length: f64,
+    height: f64,
+}
+
+#[allow(dead_code)]
+struct Triangle {
+    length: f64,
+    height: f64,
+}
+
+fn print_debug<T: Debug>(t: &T) {
+    println!("{:?}", t);
+}
+
+fn print_debug_where_clauses<T>(t: &T)
+where
+    T: Debug,
+{
+    println!("{:?}", t);
+}
+
+// `T` must implement `HasArea`, any type which meets the bound can access `HasArea`'s function
+fn area<T: HasArea>(t: &T) -> f64 {
+    t.area()
+}
+
+// generics bounds, bounding restricts the generic to types that conform to the bounds
+fn printer<T: Display>(t: T) {
+    println!("{}", t);
 }
 
 // non-copyable types
