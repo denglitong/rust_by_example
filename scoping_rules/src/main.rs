@@ -61,6 +61,45 @@ fn main() {
     }
 
     eat_box_i32(boxed_i32);
+
+    let immutable_book = Book {
+        author: "Douglas Hofstadter",
+        title: "Godel, Escher, Bach",
+        year: 2019,
+    };
+
+    // create a mutable copy of `immutable_book`
+    let mut mutable_book = immutable_book;
+
+    borrow_book(&immutable_book);
+    // immutably borrow a mutable object
+    borrow_book(&mutable_book);
+
+    // borrow a mutable object as mutable
+    // mutable reference generate from &mut mutable_var
+    new_edition(&mut mutable_book);
+
+    // new_edition(&mut immutable_book);
+}
+
+#[allow(dead_code)]
+#[derive(Copy, Clone)]
+struct Book {
+    author: &'static str,
+    title: &'static str,
+    year: u32,
+}
+
+fn borrow_book(book: &Book) {
+    println!(
+        "I immutably borrowed {} - {} edition",
+        book.title, book.year
+    );
+}
+
+fn new_edition(book: &mut Book) {
+    book.year = 2014;
+    println!("I mutably borrowed {} - {} edition", book.title, book.year);
 }
 
 fn eat_box_i32(boxed_i32: Box<i32>) {
