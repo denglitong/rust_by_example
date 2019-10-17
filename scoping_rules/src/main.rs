@@ -80,6 +80,19 @@ fn main() {
     new_edition(&mut mutable_book);
 
     // new_edition(&mut immutable_book);
+
+    let mut _mutable_integer = 7i32;
+    {
+        // borrow of `_mutable_integer` occurs here
+        let large_integer = &_mutable_integer;
+        // Error, assignment to borrowed `_mutable_integer` occurs here
+        // _mutable_integer = 50;
+        // in one scope, can not use both mutable reference and immutable reference
+        println!("Immutably borrowed {}", large_integer);
+    } // large_integer goes out of scope
+
+    // ok, not both mutable and immutable reference occurs the same time
+    _mutable_integer = 3;
 }
 
 #[allow(dead_code)]
