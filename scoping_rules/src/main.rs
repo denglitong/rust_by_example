@@ -20,7 +20,27 @@ fn main() {
 
     let _x = ToDrop;
     println!("Made a ToDrop!");
+
+    let x = 5u32;
+    // integer primitive type impl Copy trait, so no resources are moved
+    let y = x;
+    println!("x is {}, and y is {}", x, y);
+
+    let a = Box::new(5i32);
+    // resources moved, the pointer address of `a` is copied(not the data) into `b`,
+    // both are now pointers in the stack to the same heap allocated data, but `b` now owns it,
+    // and `a` can no logger access the data.
+    let b = a;
+    // println!("a contains: {}", a); // value borrow here after move
+
+    // this function takes ownership of the heap allocated memory from `b`
+    destroy_box(b);
+    // println!("b contains: {}", b); // value borrow here after move
 }
+
+fn destroy_box(c: Box<i32>) {
+    println!("Destroying a box that contains {}", c);
+} // `c` out of scopes and is destroyed and memory gets freed
 
 struct ToDrop;
 
