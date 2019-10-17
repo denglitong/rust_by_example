@@ -81,6 +81,7 @@ fn main() {
 
     // new_edition(&mut immutable_book);
 
+    // mutable borrow is mutex in current scope for any other mutable and immutable bindings
     let mut _mutable_integer = 7i32;
     {
         // borrow of `_mutable_integer` occurs here
@@ -93,6 +94,51 @@ fn main() {
 
     // ok, not both mutable and immutable reference occurs the same time
     _mutable_integer = 3;
+
+    let mut point = Point { x: 0, y: 0, z: 0 };
+    {
+        let borrowed_point = &point;
+        let another_borrow = &point;
+
+        println!(
+            "Point has coordinates: ({}, {}, {})",
+            borrowed_point.x, another_borrow.y, point.z
+        );
+
+        let mutable_borrow = &mut point;
+        // when commented, ok; open comment, error for immutable and mutable borrow same scope
+        // this is non-lexical lifetimes,
+        // https://doc.rust-lang.org/edition-guide/rust-2018/ownership-and-lifetimes/non-lexical-lifetimes.html
+        // println!("{}", borrowed_point.x);
+    }
+
+    {
+        let mutable_borrow = &mut point;
+        mutable_borrow.x = 5;
+        mutable_borrow.y = 2;
+        mutable_borrow.z = 1;
+
+        let y = &point.y;
+        println!("Point Z coordinate is {}", point.z);
+
+        let borrowed_point = &point;
+        println!(
+            "Point now has coordinates: ({}, {}, {})",
+            borrowed_point.x, borrowed_point.y, borrowed_point.z
+        );
+    }
+
+    let borrowed_point = &point;
+    println!(
+        "Point now has coordinates: ({}, {}, {})",
+        borrowed_point.x, borrowed_point.y, borrowed_point.z
+    );
+}
+
+struct Point {
+    x: i32,
+    y: i32,
+    z: i32,
 }
 
 #[allow(dead_code)]
