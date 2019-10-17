@@ -46,6 +46,29 @@ fn main() {
     println!("mutable_box contains {}", mutable_box);
     *mutable_box = 4;
     println!("mutable_box contains {}", mutable_box);
+
+    let boxed_i32 = Box::new(5_i32);
+    let stacked_i32 = 6_i32;
+
+    borrow_i32(&boxed_i32);
+    borrow_i32(&stacked_i32);
+
+    {
+        let _ref_to_i32: &i32 = &boxed_i32;
+        // cannot move outf of `box_i32` because it's borrowed
+        // eat_box_i32(boxed_i32);
+        borrow_i32(_ref_to_i32);
+    }
+
+    eat_box_i32(boxed_i32);
+}
+
+fn eat_box_i32(boxed_i32: Box<i32>) {
+    println!("Destroying box that contains {}", boxed_i32);
+}
+
+fn borrow_i32(borrowed_i32: &i32) {
+    println!("This int is: {}", borrowed_i32);
 }
 
 fn destroy_box(c: Box<i32>) {
