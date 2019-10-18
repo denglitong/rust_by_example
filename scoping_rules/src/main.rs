@@ -215,6 +215,20 @@ fn main() {
     println!("x and y are borrowed in {:?}", double);
     println!("x is borrowed in {:?}", reference);
     println!("y is *not* borrow in {:?}", number);
+
+    let b: BorrowedOne = BorrowedOne::default();
+    println!("b is {:?}", b);
+}
+
+#[derive(Debug)]
+struct BorrowedOne<'a> {
+    x: &'a i32,
+}
+
+impl<'a> Default for BorrowedOne<'a> {
+    fn default() -> Self {
+        Self { x: &10 }
+    }
 }
 
 #[derive(Debug)]
