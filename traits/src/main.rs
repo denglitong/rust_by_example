@@ -25,6 +25,36 @@ fn main() {
 
     println!("Foo + Bar = {:?}", Foo + Bar);
     println!("Bar + Foo = {:?}", Bar + Foo);
+
+    let _a = Droppable { name: "a" };
+
+    // block A
+    {
+        let _b = Droppable { name: "b" };
+
+        // block B
+        {
+            let _c = Droppable { name: "c" };
+            let _d = Droppable { name: "d" };
+            println!("Exiting block B")
+        }
+        println!("Just exited block B")
+    }
+    println!("Just exited block A");
+
+    // var can be manually dropped using the `drop` funciton
+    drop(_a);
+    println!("end if the main function");
+}
+
+struct Droppable {
+    name: &'static str,
+}
+
+impl Drop for Droppable {
+    fn drop(&mut self) {
+        println!("> Dropping {}", self.name);
+    }
 }
 
 // in Rust many of operators can be overload via traits, because they are method implement in trait.
