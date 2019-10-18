@@ -42,9 +42,54 @@ fn main() {
     }
     println!("Just exited block A");
 
-    // var can be manually dropped using the `drop` funciton
+    // var can be manually dropped using the `drop` function
     drop(_a);
     println!("end if the main function");
+
+    let mut sequence = 0..3;
+
+    println!("Four consecutive `next` calls on 0..3");
+    println!("> {:?}", sequence.next());
+    println!("> {:?}", sequence.next());
+    println!("> {:?}", sequence.next());
+    println!("> {:?}", sequence.next());
+
+    println!("Interate through 0..3 using `for`");
+    for i in 0..3 {
+        println!("> {}", i);
+    }
+
+    println!("The next four terms of the Fibonacci sequence are: ");
+    for i in fibonacci().skip(4).take(10) {
+        print!("{} ", i);
+    }
+    println!();
+
+    let array = [1u32, 3, 3, 7];
+    println!("Iterate the following array {:?}", &array);
+    for i in array.iter() {
+        println!("> {}", i);
+    }
+}
+
+struct Fibonacci {
+    curr: u32,
+    next: u32,
+}
+
+impl Iterator for Fibonacci {
+    type Item = u32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let new_next: Self::Item = self.curr + self.next;
+        self.curr = self.next;
+        self.next = new_next;
+        Some(self.curr)
+    }
+}
+
+fn fibonacci() -> Fibonacci {
+    Fibonacci { curr: 1, next: 1 }
 }
 
 struct Droppable {
