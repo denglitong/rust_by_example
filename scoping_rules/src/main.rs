@@ -234,6 +234,25 @@ fn main() {
         println!("The product is {}", multiply(&first, &second));
         println!("{} is the first", choose_first(&first, &second));
     }
+
+    {
+        // Make a `string` literal and print it:
+        let static_string = "I'm in read-only memory";
+        println!("static_string: {}", static_string);
+    } // when `static_string` goes out of scope, the reference can no longer be used, but the data remains in memory
+
+    {
+        let lifetime_num = 9;
+        let coerce_static = coerce_static(&lifetime_num);
+        println!("coerced_static: {}", coerce_static);
+    }
+    println!("NUM: {} stays accessible!", NUM);
+}
+
+static NUM: i32 = 18;
+
+fn coerce_static<'a>(_: &'a i32) -> &'a i32 {
+    &NUM
 }
 
 fn multiply<'a>(first: &'a i32, second: &'a i32) -> i32 {
