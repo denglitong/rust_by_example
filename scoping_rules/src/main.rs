@@ -6,6 +6,9 @@
 
 // Box<T> owns memory in the heap
 
+use std::fmt::Debug;
+use std::net::Shutdown::Read;
+
 fn main() {
     let _box2 = Box::new(5i32);
     {
@@ -218,6 +221,29 @@ fn main() {
 
     let b: BorrowedOne = BorrowedOne::default();
     println!("b is {:?}", b);
+
+    let x = 7;
+    let ref_x = Ref(&x);
+
+    print_ref(&ref_x);
+    print(ref_x);
+}
+
+#[derive(Debug)]
+struct Ref<'a, T: 'a>(&'a T);
+
+fn print<T>(t: T)
+where
+    T: Debug,
+{
+    println!("`print`: t is {:?}", t);
+}
+
+fn print_ref<'a, T>(t: &'a T)
+where
+    T: Debug + 'a,
+{
+    println!("`print_ref`: t is {:?}", t);
 }
 
 #[derive(Debug)]
