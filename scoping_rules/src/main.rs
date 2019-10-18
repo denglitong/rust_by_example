@@ -179,6 +179,21 @@ fn main() {
     {
         let borrow2 = &i;
     }
+
+    let (four, nine) = (4, 9);
+    print_refs(&four, &nine);
+    failed_borrow();
+    // `failed_borrow` contains no references to force `a` to be logger than the lifetime of the function,
+    // but `'a` is longer. because the lifetime is never constrained, it defaults to `'static`
+}
+
+fn print_refs<'a, 'b>(x: &'a i32, y: &'b i32) {
+    println!("x is {} and y is {}", x, y);
+}
+
+fn failed_borrow<'a>() {
+    let _x = 12;
+    //let y: &'a i32 = &_x; // `_x` does not live long enough
 }
 
 struct Point2 {
