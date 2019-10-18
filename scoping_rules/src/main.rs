@@ -171,6 +171,14 @@ fn main() {
         *last = 2u32;
     }
     println!("tuple is {:?}", mutable_tuple);
+
+    let i = 3;
+    {
+        let borrow1 = &i;
+    }
+    {
+        let borrow2 = &i;
+    }
 }
 
 struct Point2 {
