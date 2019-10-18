@@ -1,3 +1,5 @@
+use std::ops::Add;
+
 fn main() {
     // you can use Trait static method and type annotation to call implement method
     let mut dolly: Sheep = Animal::new("Dolly");
@@ -20,6 +22,37 @@ fn main() {
         "bigger"
     };
     println!("One foot is {} than one meter", cmp);
+
+    println!("Foo + Bar = {:?}", Foo + Bar);
+    println!("Bar + Foo = {:?}", Bar + Foo);
+}
+
+// in Rust many of operators can be overload via traits, because they are method implement in trait.
+// in front-end we see operator because the operator is the syntax sugar
+struct Foo;
+struct Bar;
+
+#[derive(Debug)]
+struct FooBar;
+#[derive(Debug)]
+struct BarFoo;
+
+impl std::ops::Add<Bar> for Foo {
+    type Output = FooBar;
+
+    fn add(self, rhs: Bar) -> Self::Output {
+        println!("> Foo.add(Bar) was called");
+        FooBar
+    }
+}
+
+impl std::ops::Add<Foo> for Bar {
+    type Output = BarFoo;
+
+    fn add(self, rhs: Foo) -> Self::Output {
+        println!("> Bar.add(Foo) was called");
+        BarFoo
+    }
 }
 
 // Eq, PartialEq, Ord, PartialOrd: comparision traits
