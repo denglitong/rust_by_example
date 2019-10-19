@@ -11,12 +11,54 @@ macro_rules! say_hello {
     };
 }
 
-fn main() {
-    // called macro
-    say_hello!();
-}
-
 // macro is useful:
 // 1.DRY: don't repeat yourself
 // 2.Domain-specific languages, macros allow you to define special syntax for a specific purpose
 // 3.variadic interfaces
+
+// the arg of a macro are prefixed by a dollar sign $ and type annotated with a designator
+macro_rules! create_function {
+    // this macro takes an argument of type `ident` and creates a function named `$func_name`
+    ($func_name: ident) => {
+        fn $func_name() {
+            println!("You called {:?}()", stringify!($func_name));
+        }
+    };
+}
+
+// create functions named `foo` and `bar`
+create_function!(foo);
+create_function!(bar);
+
+macro_rules! print_result {
+    // the macro takes an expr argument
+    ($expression: expr) => {
+        println!("{:?} => {:?}", stringify!($expression), $expression);
+    };
+}
+
+/*
+some of available designators:
+block
+expr: use for expressions
+ident: used for variable/function names
+item
+literal: used for literal constants
+pat: pattern
+path
+stmt: statement
+tt: token tree
+ty: type
+vis: visibility qualifier
+*/
+
+fn main() {
+    // called macro
+    say_hello!();
+
+    foo();
+    bar();
+
+    // macro must be predefine than you can use it
+    print_result!(1u32 + 1);
+}
