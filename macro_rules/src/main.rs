@@ -87,6 +87,7 @@ macro_rules! find_min {
     };
 }
 
+use std::fs::create_dir_all;
 use std::ops::{Add, Mul, Sub};
 
 macro_rules! assert_equal_len {
@@ -142,8 +143,18 @@ mod test {
     test!(sub_assign, 3u32, 2u32, 1u32);
 }
 
+macro_rules! calculate {
+    // {{ }} 这里的双大括号是macro语法的一部分，使得可以使用 {} () [] 给macro传参
+    (eval $e: expr) => {{
+        {
+            let val: usize = $e; // force types to be integers
+            println!("{} = {}", stringify!{$e}, val);
+        }
+    }};
+}
+
 fn main() {
-    // called macro
+    // call macro
     say_hello!();
 
     foo();
@@ -159,4 +170,14 @@ fn main() {
     println!("{}", find_min!(1u32));
     println!("{}", find_min!(1u32 + 2, 2u32));
     println!("{}", find_min!(5u32, 2u32 * 3, 4u32));
+
+    calculate! {
+        eval 1 + 2 // here `eval` is _not_ a Rust keyword!
+    }
+    calculate!(eval 1 + 2);
+    calculate![eval 1 + 2];
+
+    calculate! {
+        eval (1 + 2) * (3 / 4)
+    }
 }
