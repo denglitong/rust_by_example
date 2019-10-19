@@ -151,6 +151,11 @@ macro_rules! calculate {
             println!("{} = {}", stringify!{$e}, val);
         }
     }};
+
+    (eval $e: expr, $(eval $es: expr),+) => {{
+        calculate! { eval $e }
+        calculate! { $(eval $es),+ }
+    }}
 }
 
 fn main() {
@@ -180,4 +185,10 @@ fn main() {
     calculate! {
         eval (1 + 2) * (3 / 4)
     }
+
+    calculate! (
+        eval 1 + 2,
+        eval 3 + 4,
+        eval (2 * 3) + 1
+    )
 }
