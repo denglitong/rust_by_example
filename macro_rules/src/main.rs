@@ -52,6 +52,31 @@ ty: type
 vis: visibility qualifier
 */
 
+// macro can have overload binding
+macro_rules! test {
+    ($left: expr; and $right: expr) => {
+        println!(
+            "{:?} and {:?} is {:?}",
+            stringify!($left),
+            stringify!($right),
+            $left && $right
+        );
+    };
+
+    ($left: expr; or $right: expr) => {
+        println!(
+            "{:?} or {:?} is {:?}",
+            stringify!($left),
+            stringify!($right),
+            $left || $right
+        );
+    };
+
+    ($left: expr; + $right: expr) => {
+        $left + $right
+    };
+}
+
 fn main() {
     // called macro
     say_hello!();
@@ -61,4 +86,8 @@ fn main() {
 
     // macro must be predefine than you can use it
     print_result!(1u32 + 1);
+
+    test!(1i32 + 1 == 2i32; and 2i32 *2 == 4i32);
+    test!(true; or false);
+    println!("{}", test!(1; + 2))
 }
