@@ -77,6 +77,16 @@ macro_rules! test {
     };
 }
 
+macro_rules! find_min {
+    // base case, one argument
+    ($x: expr) => ($x);
+    // $(...),+ will match one or more expression, separated by commas, also note that semicolon
+    // is optional on the last case
+    ($x: expr, $($y: expr),+) => {
+        std::cmp::min($x, find_min!($($y),+));
+    };
+}
+
 fn main() {
     // called macro
     say_hello!();
@@ -89,5 +99,9 @@ fn main() {
 
     test!(1i32 + 1 == 2i32; and 2i32 *2 == 4i32);
     test!(true; or false);
-    println!("{}", test!(1; + 2))
+    println!("{}", test!(1; + 2));
+
+    println!("{}", find_min!(1u32));
+    println!("{}", find_min!(1u32 + 2, 2u32));
+    println!("{}", find_min!(5u32, 2u32 * 3, 4u32));
 }
