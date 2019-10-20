@@ -54,7 +54,54 @@ fn main() {
         "Unboxed point occupies {} bytes on the stack",
         mem::size_of_val(&unboxed_point)
     );
+
+    let collected_iterator: Vec<i32> = (0..10).collect();
+    println!(
+        "Collected(0..10) into {:?}, size: {} bytes",
+        collected_iterator,
+        mem::size_of_val(&collected_iterator), // 24: pointer size 8, usize length 8, capacity 8
+    );
+    // usize bytes: 8, the pointer-sized unsigned integer type
+    println!("usize bytes: {}", mem::size_of::<usize>());
+    // isize bytes: 8, the pointer-sized signed integer type
+    println!("isize bytes: {}", mem::size_of::<isize>());
+
+    let mut xs = vec![1i32, 2, 3];
+    println!("Initial vector: {:?}", xs);
+    xs.push(4);
+    println!("Vector: {:?}", xs);
+
+    // error, not mut variable
+    // collected_iterator.push(0);
+
+    println!("Vector length: {}", xs.len());
+    println!("Second element: {}, {:?}", xs[1], xs.get(1));
+    // vec `pop` removes the last element from the vector and return it
+    println!("Pop last element: {:?}", xs.pop());
+
+    // out of bounds error
+    // println!("Fourth element: {}", xs[3]);
+
+    println!("Contents of xs: ");
+    for x in xs.iter() {
+        println!("> {}", x);
+    }
+
+    for (i, x) in xs.iter().enumerate() {
+        println!("In position {} we have value {}", i, x);
+    }
+
+    for x in xs.iter_mut() {
+        *x *= 3;
+    }
+    println!("Updated vector: {:?}", xs);
 }
+
+// Vectors are -re-sizable arrays. like slices, their size is not known at compile time, but then
+// can grow or shrink at any time. A vector is representing using 3 parameters:
+// pointer to the data
+// length
+// capacity
 
 #[allow(dead_code)]
 #[derive(Debug, Copy, Clone)]
