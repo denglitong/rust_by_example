@@ -33,6 +33,11 @@ fn main() {
     eat(cooked_apple);
     eat(cooked_carrot);
     eat(cooked_potato);
+
+    let (cordon_bleu, steak, sushi) = (Food::CordonBleu, Food::Steak, Food::Sushi);
+    eat_v2(cordon_bleu, Day::Monday);
+    eat_v2(steak, Day::Tuesday);
+    eat_v2(sushi, Day::Wednesday);
 }
 
 #[derive(Debug)]
@@ -40,6 +45,16 @@ enum Food {
     Apple,
     Carrot,
     Potato,
+    CordonBleu,
+    Steak,
+    Sushi,
+}
+
+#[derive(Debug)]
+enum Day {
+    Monday,
+    Tuesday,
+    Wednesday,
 }
 
 #[derive(Debug)]
@@ -50,6 +65,43 @@ struct Chopped(Food);
 
 #[derive(Debug)]
 struct Cooked(Food);
+
+fn have_ingredients(food: Food) -> Option<Food> {
+    match food {
+        Food::Sushi => None,
+        _ => Some(food),
+    }
+}
+
+fn have_recipe(food: Food) -> Option<Food> {
+    match food {
+        Food::CordonBleu => None,
+        _ => Some(food),
+    }
+}
+
+fn cookable_v1(food: Food) -> Option<Food> {
+    match have_recipe(food) {
+        None => None,
+        Some(food) => match have_ingredients(food) {
+            None => None,
+            Some(food) => Some(food),
+        },
+    }
+}
+
+fn cookable_v2(food: Food) -> Option<Food> {
+    // and_then() calls its function input with the wrapped value and returns the result,
+    // if the option is None, the it returns None instead
+    have_recipe(food).and_then(have_ingredients)
+}
+
+fn eat_v2(food: Food, day: Day) {
+    match cookable_v2(food) {
+        Some(food) => println!("Yay! Oh {:?} we get to eat {:?}.", day, food),
+        None => println!("Oh no. We don't get to eat on {:?}?", day),
+    }
+}
 
 fn peel(food: Option<Food>) -> Option<Peeled> {
     match food {
