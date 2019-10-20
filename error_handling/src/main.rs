@@ -70,7 +70,23 @@ fn main() -> Result<(), ParseIntError> {
     print_v2(multiply_v5("10", "2"));
     print_v2(multiply_v5("t", "2"));
 
+    print_v2(multiply_v6("10", "2"));
+    print_v2(multiply_v6("t", "2"));
+
     Ok(())
+}
+
+// the old try!
+fn multiply_v7(first_number_str: &str, second_number_str: &str) -> AliasResult<i32> {
+    let first_number = try!(first_number_str.parse::<i32>());
+    let second_number = try!(second_number_str.parse::<i32>());
+    Ok(first_number * second_number)
+}
+
+fn multiply_v6(first_number_str: &str, second_number_str: &str) -> AliasResult<i32> {
+    let first_number = first_number_str.parse::<i32>()?;
+    let second_number = second_number_str.parse::<i32>()?;
+    Ok(first_number * second_number)
 }
 
 fn multiply_v5(first_number_str: &str, second_number_str: &str) -> AliasResult<i32> {
