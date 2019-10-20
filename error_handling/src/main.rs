@@ -4,9 +4,9 @@
 // 2.Option 类型是为了值是可选的、或者缺少值并不是错误的情况准备的
 // 3.当错误有可能发生且应当由调用者处理是，使用 Result
 
-use core::fmt;
 use std::error;
-use std::fmt::{Error, Formatter};
+use std::fmt;
+use std::fmt::{Debug, Error, Formatter};
 use std::num::ParseIntError;
 
 fn main() -> Result<(), ParseIntError> {
@@ -116,7 +116,59 @@ fn main() -> Result<(), ParseIntError> {
     print_v4(double_first_v6(empty.clone()));
     print_v4(double_first_v6(strings.clone()));
 
+    print_v5(double_first_v7(numbers.clone()));
+    print_v5(double_first_v7(empty.clone()));
+    print_v5(double_first_v7(strings.clone()));
+
     Ok(())
+}
+
+#[derive(Debug)]
+enum MyDoubleError {
+    EmptyVec,
+    Parse(ParseIntError),
+}
+
+type MyDoubleResult<T> = std::result::Result<T, MyDoubleError>;
+
+impl fmt::Display for MyDoubleError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        match *self {
+            MyDoubleError::EmptyVec => write!(f, "please use a vector with at least one element"),
+            MyDoubleError::Parse(ref e) => std::fmt::Debug::fmt(e, f),
+        }
+    }
+}
+
+impl error::Error for MyDoubleError {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
+        match *self {
+            MyDoubleError::EmptyVec => None,
+            MyDoubleError::Parse(ref e) => Some(e),
+        }
+    }
+}
+
+// implement the conversion from `ParseIntError` to `MyDoubleError`.
+// this will be automatically called by `?` if a `ParseIntError` needs to be converted into a `MyDoubleError`
+impl From<ParseIntError> for MyDoubleError {
+    fn from(err: ParseIntError) -> Self {
+        MyDoubleError::Parse(err)
+    }
+}
+
+fn double_first_v7(vec: Vec<&str>) -> MyDoubleResult<i32> {
+    let first = vec.first().ok_or(MyDoubleError::EmptyVec)?;
+    let parsed = first.parse::<i32>()?;
+
+    Ok(2 * parsed)
+}
+
+fn print_v5(result: MyDoubleResult<i32>) {
+    match result {
+        Ok(n) => println!("The first doubled is {}", n),
+        Err(e) => println!("Error: {}", e),
+    }
 }
 
 fn double_first_v6(vec: Vec<&str>) -> BoxResult<i32> {
