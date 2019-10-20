@@ -4,6 +4,7 @@
 // 2.Option 类型是为了值是可选的、或者缺少值并不是错误的情况准备的
 // 3.当错误有可能发生且应当由调用者处理是，使用 Result
 
+use std::fmt::{Error, Formatter};
 use std::num::ParseIntError;
 
 fn main() -> Result<(), ParseIntError> {
@@ -101,7 +102,46 @@ fn main() -> Result<(), ParseIntError> {
         double_first_v3(strings.clone())
     );
 
+    print_v3(double_first_v4(numbers.clone()));
+    print_v3(double_first_v4(empty.clone()));
+    print_v3(double_first_v4(strings.clone()));
+
     Ok(())
+}
+
+#[derive(Debug, Clone)]
+struct DoubleError;
+
+type MyResult<T> = std::result::Result<T, DoubleError>;
+
+impl std::fmt::Display for DoubleError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "invalid first item to double")
+    }
+}
+
+impl std::error::Error for DoubleError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        // Generic error, underlying cause isn't tracked.
+        None
+    }
+}
+
+fn double_first_v4(vec: Vec<&str>) -> MyResult<i32> {
+    vec.first()
+        .ok_or(DoubleError) // change the error to our new type.
+        .and_then(|s| {
+            s.parse::<i32>()
+                .map_err(|_| DoubleError) // update to the new error type here also
+                .map(|i| 2 * i)
+        })
+}
+
+fn print_v3(result: MyResult<i32>) {
+    match result {
+        Ok(n) => println!("The first doubled is {}", n),
+        Err(e) => println!("Error: {}", e),
+    }
 }
 
 // a couple of combinators come in handy to swap the Result and Option:
