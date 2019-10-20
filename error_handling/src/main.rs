@@ -4,7 +4,9 @@
 // 2.Option 类型是为了值是可选的、或者缺少值并不是错误的情况准备的
 // 3.当错误有可能发生且应当由调用者处理是，使用 Result
 
-fn main() {
+use std::num::ParseIntError;
+
+fn main() -> Result<(), ParseIntError> {
     give_princess("teddy bear");
     // give_princess("snake");
 
@@ -38,6 +40,28 @@ fn main() {
     eat_v2(cordon_bleu, Day::Monday);
     eat_v2(steak, Day::Tuesday);
     eat_v2(sushi, Day::Wednesday);
+
+    let twenty = multiply("10", "2");
+    println!("double is {}", twenty);
+
+    // panic
+    // let tt = multiply("t", "2");
+    // println!("double is {}", tt);
+
+    let number_str = "10";
+    let number = match number_str.parse::<i32>() {
+        Ok(number) => number,
+        Err(e) => return Err(e),
+    };
+    println!("{}", number);
+
+    Ok(())
+}
+
+fn multiply(first_number_str: &str, second_number_str: &str) -> i32 {
+    let first_number = first_number_str.parse::<i32>().unwrap();
+    let second_number = second_number_str.parse::<i32>().unwrap();
+    first_number * second_number
 }
 
 #[derive(Debug)]
