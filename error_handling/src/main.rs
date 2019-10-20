@@ -112,7 +112,18 @@ fn main() -> Result<(), ParseIntError> {
     print_v4(double_first_v5(empty.clone()));
     print_v4(double_first_v5(strings.clone()));
 
+    print_v4(double_first_v6(numbers.clone()));
+    print_v4(double_first_v6(empty.clone()));
+    print_v4(double_first_v6(strings.clone()));
+
     Ok(())
+}
+
+fn double_first_v6(vec: Vec<&str>) -> BoxResult<i32> {
+    // here ? use From::from(e) to auto convert error type the the return one if it's convertible
+    let first = vec.first().ok_or(EmptyVec)?;
+    let parsed = first.parse::<i32>()?;
+    Ok(2 * parsed)
 }
 
 type BoxResult<T> = std::result::Result<T, Box<error::Error>>;
