@@ -67,7 +67,24 @@ fn main() -> Result<(), ParseIntError> {
     print_v2(multiply_v4("10", "2"));
     print_v2(multiply_v4("t", "2"));
 
+    print_v2(multiply_v5("10", "2"));
+    print_v2(multiply_v5("t", "2"));
+
     Ok(())
+}
+
+fn multiply_v5(first_number_str: &str, second_number_str: &str) -> AliasResult<i32> {
+    let first_number = match first_number_str.parse::<i32>() {
+        Ok(n) => n,
+        Err(e) => return Err(e),
+    };
+
+    let second_number = match second_number_str.parse::<i32>() {
+        Ok(n) => n,
+        Err(e) => return Err(e),
+    };
+
+    Ok(first_number * second_number)
 }
 
 // Result<T,E> alias
