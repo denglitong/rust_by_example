@@ -73,15 +73,62 @@ fn main() -> Result<(), ParseIntError> {
     print_v2(multiply_v6("10", "2"));
     print_v2(multiply_v6("t", "2"));
 
+    let numbers = vec!["42", "93", "18"];
+    let empty: Vec<&str> = vec![];
+    let strings = vec!["tofu", "93", "18"];
+
+    println!("The first doubled is {}", double_first(numbers.clone()));
+    // println!("The first doubled is {}", double_first(empty));
+    // println!("The first doubled is {}", double_first(strings));
+
+    println!(
+        "The first doubled is {:?}",
+        double_first_v2(numbers.clone())
+    );
+    println!("The first doubled is {:?}", double_first_v2(empty.clone()));
+    println!(
+        "The first doubled is {:?}",
+        double_first_v2(strings.clone())
+    );
+
+    println!(
+        "The first doubled is {:?}",
+        double_first_v3(numbers.clone())
+    );
+    println!("The first doubled is {:?}", double_first_v3(empty.clone()));
+    println!(
+        "The first doubled is {:?}",
+        double_first_v3(strings.clone())
+    );
+
     Ok(())
 }
 
-// the old try!
-fn multiply_v7(first_number_str: &str, second_number_str: &str) -> AliasResult<i32> {
-    let first_number = try!(first_number_str.parse::<i32>());
-    let second_number = try!(second_number_str.parse::<i32>());
-    Ok(first_number * second_number)
+// a couple of combinators come in handy to swap the Result and Option:
+fn double_first_v3(vec: Vec<&str>) -> Result<Option<i32>, ParseIntError> {
+    let opt = vec.first().map(|first| first.parse::<i32>().map(|n| 2 * n));
+
+    let opt = opt.map_or(Ok(None), |r| r.map(Some))?;
+
+    Ok(opt)
 }
+
+fn double_first_v2(vec: Vec<&str>) -> Option<Result<i32, ParseIntError>> {
+    vec.first().map(|first| first.parse::<i32>().map(|n| 2 * n))
+}
+
+fn double_first(vec: Vec<&str>) -> i32 {
+    let first = vec.first().unwrap(); // generate error 1, Option::None.unwrap()
+    2 * first.parse::<i32>().unwrap() // generate error 2, Result::unwrap() -> ParseIntError
+}
+
+// the old try!
+//fn multiply_v7(first_number_str: &str, second_number_str: &str) -> AliasResult<i32> {
+//    // try! is deprecated in 1.39.0, use ? instead
+//    let first_number = try!(first_number_str.parse::<i32>());
+//    let second_number = try!(second_number_str.parse::<i32>());
+//    Ok(first_number * second_number)
+//}
 
 fn multiply_v6(first_number_str: &str, second_number_str: &str) -> AliasResult<i32> {
     let first_number = first_number_str.parse::<i32>()?;
