@@ -4,6 +4,8 @@
 // 2.Option 类型是为了值是可选的、或者缺少值并不是错误的情况准备的
 // 3.当错误有可能发生且应当由调用者处理是，使用 Result
 
+use core::fmt;
+use std::error;
 use std::fmt::{Error, Formatter};
 use std::num::ParseIntError;
 
@@ -106,7 +108,49 @@ fn main() -> Result<(), ParseIntError> {
     print_v3(double_first_v4(empty.clone()));
     print_v3(double_first_v4(strings.clone()));
 
+    print_v4(double_first_v5(numbers.clone()));
+    print_v4(double_first_v5(empty.clone()));
+    print_v4(double_first_v5(strings.clone()));
+
     Ok(())
+}
+
+type BoxResult<T> = std::result::Result<T, Box<error::Error>>;
+
+#[derive(Debug, Clone)]
+struct EmptyVec;
+
+impl fmt::Display for EmptyVec {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        write!(f, "invalid first item to double")
+    }
+}
+
+impl error::Error for EmptyVec {
+    fn description(&self) -> &str {
+        "invalid first item to double"
+    }
+
+    fn cause(&self) -> Option<&error::Error> {
+        None
+    }
+}
+
+fn double_first_v5(vec: Vec<&str>) -> BoxResult<i32> {
+    vec.first()
+        .ok_or_else(|| EmptyVec.into()) // convert to box
+        .and_then(|s| {
+            s.parse::<i32>()
+                .map_err(|e| e.into()) // convert to box
+                .map(|i| 2 * i)
+        })
+}
+
+fn print_v4(result: BoxResult<i32>) {
+    match result {
+        Ok(n) => println!("The first doubled is {}", n),
+        Err(e) => println!("Error: {}", e),
+    }
 }
 
 #[derive(Debug, Clone)]
