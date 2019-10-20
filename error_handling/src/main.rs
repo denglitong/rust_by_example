@@ -55,7 +55,41 @@ fn main() -> Result<(), ParseIntError> {
     };
     println!("{}", number);
 
+    let tt = multiply_v2("t", "2");
+    print(tt);
+
+    let twenty = multiply_v3("10", "2");
+    print(twenty);
+
+    let tt = multiply_v3("t", "2");
+    print(tt);
+
     Ok(())
+}
+
+fn multiply_v2(first_number_str: &str, second_number_str: &str) -> Result<i32, ParseIntError> {
+    match first_number_str.parse::<i32>() {
+        Ok(first_number) => match second_number_str.parse::<i32>() {
+            Ok(second_number) => Ok(first_number * second_number),
+            Err(e) => Err(e),
+        },
+        Err(e) => Err(e),
+    }
+}
+
+fn print(result: Result<i32, ParseIntError>) {
+    match result {
+        Ok(n) => println!("n is {}", n),
+        Err(e) => println!("Error: {}", e),
+    }
+}
+
+fn multiply_v3(first_number_str: &str, second_number_str: &str) -> Result<i32, ParseIntError> {
+    first_number_str.parse::<i32>().and_then(|first_number| {
+        second_number_str
+            .parse::<i32>()
+            .map(|second_number| first_number * second_number)
+    })
 }
 
 fn multiply(first_number_str: &str, second_number_str: &str) -> i32 {
