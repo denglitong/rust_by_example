@@ -120,6 +120,42 @@ fn main() -> Result<(), ParseIntError> {
     print_v5(double_first_v7(empty.clone()));
     print_v5(double_first_v7(strings.clone()));
 
+    // an inter::map() might fail:
+    let numbers: Vec<_> = strings
+        .clone()
+        .into_iter()
+        .map(|s| s.parse::<i32>())
+        .collect();
+    println!("Results: {:?}", numbers);
+
+    // ignore the failed items with filter_map()
+    let numbers: Vec<_> = strings
+        .clone()
+        .into_iter()
+        .map(|s| s.parse::<i32>())
+        .filter_map(Result::ok)
+        .collect();
+    println!("Results: {:?}", numbers);
+
+    // fail the entire operation with collect()
+    let numbers: Result<Vec<_>, _> = strings
+        .clone()
+        .into_iter()
+        .map(|s| s.parse::<i32>())
+        .collect();
+    println!("Results: {:?}", numbers);
+
+    // collect all valid values and failures with partition
+    let (numbers, errors): (Vec<_>, Vec<_>) = strings
+        .clone()
+        .into_iter()
+        .map(|s| s.parse::<i32>())
+        .partition(Result::is_ok);
+    let numbers: Vec<_> = numbers.into_iter().map(Result::unwrap).collect();
+    let errors: Vec<_> = errors.into_iter().map(Result::unwrap_err).collect();
+    println!("Numbers: {:?}", numbers);
+    println!("Errors: {:?}", errors);
+
     Ok(())
 }
 
