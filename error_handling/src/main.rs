@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 // Rust的错误处理
 // 1.显示的 panic 主要用于测试，以及处理不可恢复的错误
 // 2.Option 类型是为了值是可选的、或者缺少值并不是错误的情况准备的
@@ -16,10 +17,72 @@ fn main() {
     give_commoner(void);
 
     let bird = Some("robin");
-    let nothing = None;
+    // let nothing = None;
 
     give_princess_2(bird);
-    give_princess_2(nothing);
+    // give_princess_2(nothing);
+
+    let apple = Some(Food::Apple);
+    let carrot = Some(Food::Carrot);
+    let potato = None;
+
+    let cooked_apple = cook(chop(peel(apple)));
+    let cooked_carrot = cook(chop(peel(carrot)));
+    let cooked_potato = process(potato);
+
+    eat(cooked_apple);
+    eat(cooked_carrot);
+    eat(cooked_potato);
+}
+
+#[derive(Debug)]
+enum Food {
+    Apple,
+    Carrot,
+    Potato,
+}
+
+#[derive(Debug)]
+struct Peeled(Food);
+
+#[derive(Debug)]
+struct Chopped(Food);
+
+#[derive(Debug)]
+struct Cooked(Food);
+
+fn peel(food: Option<Food>) -> Option<Peeled> {
+    match food {
+        Some(food) => Some(Peeled(food)),
+        None => None,
+    }
+}
+
+fn chop(food: Option<Peeled>) -> Option<Chopped> {
+    match food {
+        Some(Peeled(food)) => Some(Chopped(food)),
+        None => None,
+    }
+}
+
+fn cook(food: Option<Chopped>) -> Option<Cooked> {
+    match food {
+        Some(Chopped(food)) => Some(Cooked(food)),
+        None => None,
+    }
+}
+
+fn process(food: Option<Food>) -> Option<Cooked> {
+    food.map(|f| Peeled(f))
+        .map(|Peeled(f)| Chopped(f))
+        .map(|Chopped(f)| Cooked(f))
+}
+
+fn eat(food: Option<Cooked>) {
+    match food {
+        Some(food) => println!("Mmm. I love {:?}", food),
+        None => println!("Oh no! It wasn't edible."),
+    }
 }
 
 fn give_princess_2(gift: Option<&str>) {
