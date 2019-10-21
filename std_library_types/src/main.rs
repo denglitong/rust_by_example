@@ -204,6 +204,34 @@ fn main() {
         Ok(my_str) => println!("Conversion successfule: '{}'", my_str),
         Err(e) => println!("Conversion failed: {:?}", e),
     }
+
+    try_division(4, 2);
+    try_division(1, 0);
+
+    let optional_float = Some(0f32);
+    println!(
+        "{:?} unwraps to {:?}",
+        optional_float,
+        optional_float.unwrap()
+    );
+
+    //println!("{:?} unwraps to {:?}", None, None.unwrap())
+}
+
+fn checked_division(dividend: i32, divisor: i32) -> Option<i32> {
+    if divisor == 0 {
+        // failure is represented as the `None` variant
+        None
+    } else {
+        Some(dividend / divisor)
+    }
+}
+
+fn try_division(dividend: i32, divisor: i32) {
+    match checked_division(dividend, divisor) {
+        None => println!("{} / {} failed!", dividend, divisor),
+        Some(quotient) => println!("{} / {} = {}", dividend, divisor, quotient),
+    }
 }
 
 // Strings: // there are two types of strings in Rust: string and &str
