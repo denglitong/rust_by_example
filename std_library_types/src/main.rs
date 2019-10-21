@@ -216,6 +216,58 @@ fn main() {
     );
 
     //println!("{:?} unwraps to {:?}", None, None.unwrap())
+
+    // println!("{}", op(1.0, 10.0));
+    println!("{}", op(10.0, 1.0));
+}
+
+mod checked {
+    #[derive(Debug)]
+    pub enum MatchError {
+        DivisionByZero,
+        NonPositiveLogarithm,
+        NegativeSquareRoot,
+    }
+
+    pub type MatchResult = Result<f64, MatchError>;
+
+    pub fn div(x: f64, y: f64) -> MatchResult {
+        if y == 0.0 {
+            Err(MatchError::DivisionByZero)
+        } else {
+            Ok(x / y)
+        }
+    }
+
+    pub fn sqrt(x: f64) -> MatchResult {
+        if x < 0.0 {
+            Err(MatchError::NegativeSquareRoot)
+        } else {
+            Ok(x.sqrt())
+        }
+    }
+
+    pub fn ln(x: f64) -> MatchResult {
+        if x <= 0.0 {
+            Err(MatchError::NonPositiveLogarithm)
+        } else {
+            // 自然对数 logeX
+            Ok(x.ln())
+        }
+    }
+}
+
+fn op(x: f64, y: f64) -> f64 {
+    match checked::div(x, y) {
+        Err(why) => panic!("{:?}", why),
+        Ok(ratio) => match checked::ln(ratio) {
+            Err(why) => panic!("{:?}", why),
+            Ok(ln) => match checked::sqrt(ln) {
+                Err(why) => panic!("{:?}", why),
+                Ok(sqrt) => sqrt,
+            },
+        },
+    }
 }
 
 fn checked_division(dividend: i32, divisor: i32) -> Option<i32> {
