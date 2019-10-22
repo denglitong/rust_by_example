@@ -219,6 +219,9 @@ fn main() {
 
     // println!("{}", op(1.0, 10.0));
     println!("{}", op(10.0, 1.0));
+
+    println!("{:?}", checked::op(1.0, 10.0));
+    println!("{:?}", checked::op(10.0, 1.0));
 }
 
 mod checked {
@@ -254,6 +257,13 @@ mod checked {
             // 自然对数 logeX
             Ok(x.ln())
         }
+    }
+
+    // using ?
+    pub fn op(x: f64, y: f64) -> MatchResult {
+        let quotient = div(x, y)?;
+        let ln = ln(quotient)?;
+        sqrt(ln)
     }
 }
 
