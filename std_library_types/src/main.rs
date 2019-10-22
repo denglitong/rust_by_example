@@ -6,6 +6,7 @@
 
 use std::collections::{HashMap, HashSet};
 use std::mem;
+use std::rc::Rc;
 use std::str;
 use std::string;
 
@@ -298,6 +299,37 @@ fn main() {
         "Symmetric Difference: {:?}",
         a.symmetric_difference(&b).collect::<Vec<&i32>>()
     );
+
+    // Rc (Reference Counting)
+    // When multiple ownership is needed, Rc can be used.
+    // Rc keeps track of the number of the differences
+    // which means the number of owners of the value wrapped inside an Rc
+    // Cloning an Rc never do a deep copy.
+    // Cloning creates just another pointer to the wrapped value and increments the count
+    let rc_examples = "Rc examples".to_string();
+    {
+        println!("--- rc_a is created ---");
+
+        let rc_a: Rc<String> = Rc::new(rc_examples);
+        println!("Reference Count of rc_a: {}", Rc::strong_count(&rc_a));
+        {
+            println!("--- rc_a is cloned to rc_b ---");
+
+            let rc_b: Rc<String> = Rc::clone(&rc_a);
+            println!("Reference count of rc_b: {}", Rc::strong_count(&rc_b)); // 2
+            println!("Reference count of rc_a: {}", Rc::strong_count(&rc_a)); // 2
+
+            println!("rc_a and rc_b are equal: {}", rc_a.eq(&rc_b));
+
+            println!("Length of the value inside rc_a: {}", rc_a.len());
+            println!("Value of rc_b: {}", rc_b);
+
+            println!("--- rc_b is dropped out of scope ---");
+        }
+
+        println!("Reference count of rc_a: {}", Rc::strong_count(&rc_a)); // 2
+        println!("--- rc_a is dropped out of scope");
+    }
 }
 
 // any type that implements the Eq and Hash traits can be a key in HashMap, this includes:
