@@ -222,6 +222,22 @@ fn main() {
 
     println!("{:?}", checked::op(1.0, 10.0));
     println!("{:?}", checked::op(10.0, 1.0));
+
+    let _x = Box::new(0i32);
+    // division(3, 0);
+    // println!("This point won't be reached!");
+}
+
+// panic! macro can be used to generate a panic and start unwinding its stack.
+// while unwinding, the runtime will take care of freeing all the resources owned by the thread
+// by calling the destructor of all its objects.
+// if you dealing with programs with only one thread, panic! will cause the program to exit.
+fn division(dividend: i32, divisor: i32) -> i32 {
+    if divisor == 0 {
+        panic!("division by zero")
+    } else {
+        dividend / divisor
+    }
 }
 
 mod checked {
