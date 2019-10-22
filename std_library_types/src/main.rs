@@ -258,6 +258,56 @@ fn main() {
     for (contact, &number) in contacts.iter() {
         println!("- Calling {}: {}", contact, call(number));
     }
+
+    let mut accounts: Accounts = HashMap::new();
+
+    let account = Account {
+        username: "j.everyman",
+        password: "password123",
+    };
+    let account_info = AccountInfo {
+        name: "John Everyman",
+        email: "j.everyman@email.com",
+    };
+
+    accounts.insert(account, account_info);
+
+    try_logon(&accounts, "j.everyman", "password123");
+    try_logon(&accounts, "j.everyman", "pasaword123");
+}
+
+// any type that implements the Eq and Hash traits can be a key in HashMap, this includes:
+// bool
+// int, uint
+// String and &str (pro tip: you can have a HashMap key by String and call .get() with an &str)
+// 封装类型的 Eq 和 Hash 取决于其基础类型的 Eq, Hash
+#[derive(PartialEq, Eq, Hash)]
+struct Account<'a> {
+    username: &'a str,
+    password: &'a str,
+}
+
+struct AccountInfo<'a> {
+    name: &'a str,
+    email: &'a str,
+}
+
+type Accounts<'a> = HashMap<Account<'a>, AccountInfo<'a>>;
+
+fn try_logon<'a>(accounts: &Accounts<'a>, username: &'a str, password: &'a str) {
+    println!("username: {}", username);
+    println!("password: {}", password);
+    println!("Attempting logon...");
+
+    let logon = Account { username, password };
+
+    match accounts.get(&logon) {
+        Some(account_info) => {
+            println!("Successful logon!");
+            println!("Name: {}, Email: {}", account_info.name, account_info.email);
+        }
+        _ => println!("Login failed!"),
+    }
 }
 
 fn call(number: &str) -> &str {
