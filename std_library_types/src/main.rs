@@ -4,6 +4,7 @@
 // boxed values can be dereferenced using * operator
 #![allow(dead_code)]
 
+use std::collections::HashMap;
 use std::mem;
 use std::str;
 use std::string;
@@ -226,6 +227,51 @@ fn main() {
     let _x = Box::new(0i32);
     // division(3, 0);
     // println!("This point won't be reached!");
+
+    let mut contacts = HashMap::new();
+
+    contacts.insert("Daniel", "798-1364");
+    contacts.insert("Ashley", "645-7689");
+    contacts.insert("Katie", "435-8291");
+    contacts.insert("robert", "956-1745");
+
+    match contacts.get(&"Daniel") {
+        Some(&number) => println!("Calling Daniel: {}", call(number)),
+        _ => println!("Don't have Daniel's number."),
+    }
+
+    let ins = contacts.insert("Newkey", "164-6743");
+    // if the inserted value is new, then return `None`
+    println!("{:?}", ins);
+    let ins = contacts.insert("Daniel", "164-6743");
+    // if the inserted value existed, then return `Some(value)`
+    println!("{:?}", ins);
+
+    match contacts.get(&"Ashley") {
+        Some(&number) => println!("Calling Ashley: {}", call(number)),
+        _ => println!("Don't have Ashley's number"),
+    }
+
+    contacts.remove(&"Ashely");
+
+    // HashMap::iter() returns an iterator that yields (&'a key, &'a value) pair in arbitrary order.
+    for (contact, &number) in contacts.iter() {
+        println!("- Calling {}: {}", contact, call(number));
+    }
+}
+
+fn call(number: &str) -> &str {
+    match number {
+        "798-1364" => {
+            "we're sorry, the call cannot be completed as dialed.\
+             Please hang up and try again"
+        }
+        "645-7689" => {
+            "hello, this is Mr. Awesome's Pizza. My name is Fred.\
+             What can I get from you today?"
+        }
+        _ => "Hi! Who is this again?",
+    }
 }
 
 // panic! macro can be used to generate a panic and start unwinding its stack.
