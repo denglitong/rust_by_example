@@ -16,6 +16,8 @@
 // File I/O
 // ...
 
+use std::sync::mpsc;
+use std::sync::mpsc::{Receiver, Sender};
 use std::thread;
 use std::thread::JoinHandle;
 
@@ -23,20 +25,55 @@ static NTHREADS: u32 = 3;
 
 // This is the `main` thread
 fn main() {
-    // make a vector to hold the children which are spawned
-    let mut children = vec![];
+    show_threads_simple();
+    show_threads_map_reduce();
+    show_channels();
+}
 
-    for i in 0..NTHREADS {
-        // spin up another thread
-        children.push(thread::spawn(move || {
-            println!("this is thread number {}", i);
-        }));
+fn show_channels() {
+    println!("======= show_channels =========");
+
+    // Channels have two endpoints: the `Sender<T>` and the `Receiver<T>`,
+    // where `T` is the type of the message to be transferred
+    let (tx, rx): (Sender<u32>, Receiver<u32>) = mpsc::channel(); // mpsc: multiple producer single consumer
+    let mut children = Vec::new();
+
+    for id in 0..NTHREADS {
+        // the sender endpoint can be copied
+        let thread_tx = tx.clone();
+
+        // each thread will send its id via the channel
+        let child = thread::spawn(move || {
+            // the thread takes ownership over `thread_tx`
+            // each thread queues a message in the channel
+            thread_tx.send(id).unwrap();
+
+            // sending is a non-blocking operation, the thread will continue immediately after sending its message
+            println!("thread {} finished", id);
+        });
+
+        children.push(child);
     }
 
+    // collect all the messages
+    let mut ids = Vec::with_capacity(NTHREADS as usize);
+    for _ in 0..NTHREADS {
+        // the `recv` method picks a message from the channel
+        // `recv` will block the current thread if there are no messages available
+        ids.push(rx.recv());
+    }
+
+    // wait for the threads to complete any remaining work
     for child in children {
-        // wait for the thread to finish. returns a result
-        let _ = child.join();
+        child.join().expect("oops! the child thread panicked");
     }
+
+    // show the order in which the messages were sent
+    println!("{:?}", ids);
+}
+
+fn show_threads_map_reduce() {
+    println!("======= show_threads_map_reduce =========");
 
     // The standard library provides great threading primitives out of the box.
     // These, combined with Rust's concept of Ownership and aliasing rules, automatically prevent data races.
@@ -129,4 +166,23 @@ fn main() {
 
     // let final_result = intermediate_sums.iter().sum(); // can not infer type
     println!("Final sum result: {}", final_result);
+}
+
+fn show_threads_simple() {
+    println!("======= show_threads_simple =========");
+
+    // make a vector to hold the children which are spawned
+    let mut children = vec![];
+
+    for i in 0..NTHREADS {
+        // spin up another thread
+        children.push(thread::spawn(move || {
+            println!("this is thread number {}", i);
+        }));
+    }
+
+    for child in children {
+        // wait for the thread to finish. returns a result
+        let _ = child.join();
+    }
 }
