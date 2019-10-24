@@ -18,8 +18,8 @@
 
 #![allow(dead_code)]
 use std::error::Error;
-use std::fs::File;
-use std::io::Read;
+use std::fs::{File, OpenOptions};
+use std::io::{Read, Write};
 use std::path::Path;
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
@@ -28,19 +28,55 @@ use std::{thread, time};
 
 static NTHREADS: u32 = 3;
 
+static LOREM_IP_SUM: &str =
+    "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+";
+
 // This is the `main` thread
 fn main() {
     // show_threads_simple();
     // show_threads_map_reduce();
     // show_channels();
     // show_path();
-    show_file();
+    // show_file_open("hello.txt");
+    show_file_create();
 }
 
-fn show_file() {
-    let path = Path::new("hello.txt");
+fn show_file_create() {
+    // The `create` static method opens a file in write-only mode.
+    // If the file already existed, the old content is destroyed, otherwise a new file is created
+    let path = Path::new("lorem_ipsum.txt");
     let display = path.display();
 
+    //    let file = OpenOptions::new()
+    //        .read(true)
+    //        .write(true)
+    //        .create(true)
+    //        .open(display);
+
+    let mut file = match File::create(&path) {
+        Err(why) => panic!("couldn't create {}: {}", display, why.description()),
+        Ok(file) => file,
+    };
+
+    match file.write_all(LOREM_IP_SUM.as_bytes()) {
+        Err(why) => panic!("couldn't write to {}: {}", display, why.description()),
+        Ok(_) => println!("successfully wrote to {}", display),
+    }
+
+    show_file_open(display.to_string().as_str());
+}
+
+fn show_file_open(file_name: &str) {
+    let path = Path::new(file_name);
+    let display = path.display();
+
+    // The `open` static method can be used to open a file in read-only mode.
     let mut file = match File::open(&path) {
         // the description method of io::Error returns a string that describes the error
         Err(why) => panic!("couldn't open {}: {}", display, why.description()),
