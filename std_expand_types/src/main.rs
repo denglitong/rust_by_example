@@ -21,6 +21,7 @@ use std::error::Error;
 use std::fs::{File, OpenOptions};
 use std::io::{BufRead, Read, Write};
 use std::path::Path;
+use std::process::Command;
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
 use std::thread::JoinHandle;
@@ -45,7 +46,25 @@ fn main() {
     // show_path();
     // show_file_open("hello.txt");
     // show_file_create();
-    show_file_read_lines();
+    // show_file_read_lines();
+    show_child_process();
+}
+
+// The process::Output struct represents the output of a finished child process,
+// and the process::Command struct is a process builder.
+fn show_child_process() {
+    let output = Command::new("rustc")
+        .arg("--version")
+        .output()
+        .unwrap_or_else(|e| panic!("failed to execute process: {}", e));
+
+    if output.status.success() {
+        let s = String::from_utf8_lossy(&output.stdout);
+        println!("rustc succeeded and stdout was:\n{}", s);
+    } else {
+        let s = String::from_utf8_lossy(&output.stderr);
+        println!("rustc failed and stderr was:\n{}", s);
+    }
 }
 
 fn show_file_read_lines() {
