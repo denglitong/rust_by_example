@@ -21,7 +21,7 @@ use std::error::Error;
 use std::fs::{File, OpenOptions};
 use std::io::{BufRead, Read, Write};
 use std::path::Path;
-use std::process::Command;
+use std::process::{Command, Stdio};
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
 use std::thread::JoinHandle;
@@ -47,7 +47,37 @@ fn main() {
     // show_file_open("hello.txt");
     // show_file_create();
     // show_file_read_lines();
-    show_child_process();
+    // show_child_process();
+    show_pipes();
+}
+
+// Pipes: The std::Child struct represents a running child process, and exposes the stdin, stdout
+// and stderr handlers for interaction with the underlying process via pipes.
+static PANGRAM: &'static str = "the quick brown fox jumped over the lazy dog\n";
+// echo "the quick brown fox jumped over the lazy dog\n" | wc
+fn show_pipes() {
+    let process = match Command::new("wc")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+    {
+        Err(why) => panic!("couldn't spawn wc: {}", why.description()),
+        Ok(process) => process,
+    };
+
+    // Write a string to the `stdin` of `wc`
+    // `stdin` has type `Option<ChildStdin>`, but since we know this instance must have one,
+    // we can directly `unwrap` it.
+    match process.stdin.unwrap().write_all(PANGRAM.as_bytes()) {
+        Err(why) => panic!("couldn't write to wc stdin: {}", why.description()),
+        Ok(_) => println!("sent pangram to wc"),
+    }
+
+    let mut s = String::new();
+    match process.stdout.unwrap().read_to_string(&mut s) {
+        Err(why) => panic!("couldn't read wc stdout: {}", why.description()),
+        Ok(_) => print!("wc responded with:\n{}", s), //        0       9      44
+    }
 }
 
 // The process::Output struct represents the output of a finished child process,
