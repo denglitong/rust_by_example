@@ -48,7 +48,15 @@ fn main() {
     // show_file_create();
     // show_file_read_lines();
     // show_child_process();
-    show_pipes();
+    // show_pipes();
+    show_process_wait();
+}
+
+fn show_process_wait() {
+    let mut child = Command::new("sleep").arg("5").spawn().unwrap();
+    println!("process beging");
+    let _result = child.wait().unwrap();
+    println!("reached end of process");
 }
 
 // Pipes: The std::Child struct represents a running child process, and exposes the stdin, stdout
