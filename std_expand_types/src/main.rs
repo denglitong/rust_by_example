@@ -19,12 +19,12 @@
 #![allow(dead_code)]
 use std::error::Error;
 use std::fs::{File, OpenOptions};
-use std::io::{Read, Write};
+use std::io::{BufRead, Read, Write};
 use std::path::Path;
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
 use std::thread::JoinHandle;
-use std::{thread, time};
+use std::{io, thread, time};
 
 static NTHREADS: u32 = 3;
 
@@ -44,7 +44,37 @@ fn main() {
     // show_channels();
     // show_path();
     // show_file_open("hello.txt");
-    show_file_create();
+    // show_file_create();
+    show_file_read_lines();
+}
+
+fn show_file_read_lines() {
+    if let Ok(lines) = read_lines("/etc/passwd") {
+        // consumes the iterator, returns an (Optional) String
+        for line in lines {
+            if let Ok(row) = line {
+                println!("{}", row);
+            }
+        }
+    }
+
+    let file = File::open("/Users/leon/.bashrc");
+    let lines = io::BufReader::new(file.unwrap()).lines();
+    for line in lines {
+        if let Ok(row) = line {
+            println!("{}", row);
+        }
+    }
+}
+
+// The output is wrapped in a Result to allow matching on errors
+// Returns an Iterator to the Reader of the lines of the file.
+fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
+where
+    P: AsRef<Path>,
+{
+    let file = File::open(filename)?;
+    Ok(io::BufReader::new(file).lines())
 }
 
 fn show_file_create() {
