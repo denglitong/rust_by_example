@@ -17,6 +17,9 @@
 // ...
 
 #![allow(dead_code)]
+use std::error::Error;
+use std::fs::File;
+use std::io::Read;
 use std::path::Path;
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
@@ -30,7 +33,27 @@ fn main() {
     // show_threads_simple();
     // show_threads_map_reduce();
     // show_channels();
-    show_path();
+    // show_path();
+    show_file();
+}
+
+fn show_file() {
+    let path = Path::new("hello.txt");
+    let display = path.display();
+
+    let mut file = match File::open(&path) {
+        // the description method of io::Error returns a string that describes the error
+        Err(why) => panic!("couldn't open {}: {}", display, why.description()),
+        Ok(file) => file,
+    };
+
+    let mut s = String::new();
+    match file.read_to_string(&mut s) {
+        Err(why) => panic!("couldn't read {}: {}", display, why.description()),
+        Ok(_) => print!("{} contains:\n{}", display, s),
+    }
+
+    // `file` goes out of scope, and the "hello.txt" file goes closed (Drop trait)
 }
 
 // two flavors of Path: posix::Path, for UNIX-like systems, and windows::Path, for Windows
