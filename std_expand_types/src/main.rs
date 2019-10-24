@@ -16,18 +16,54 @@
 // File I/O
 // ...
 
+#![allow(dead_code)]
+use std::path::Path;
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
-use std::thread;
 use std::thread::JoinHandle;
+use std::{thread, time};
 
 static NTHREADS: u32 = 3;
 
 // This is the `main` thread
 fn main() {
-    show_threads_simple();
-    show_threads_map_reduce();
-    show_channels();
+    // show_threads_simple();
+    // show_threads_map_reduce();
+    // show_channels();
+    show_path();
+}
+
+// two flavors of Path: posix::Path, for UNIX-like systems, and windows::Path, for Windows
+// Note that a Path is not internally represented as an UTF-8 string, but instead is stored as a
+// vector of bytes(Vec<u8>), Therefore, coverting a Path to &str may fail(an Option is returned)
+fn show_path() {
+    let path = Path::new(".");
+    // the `display` method returns a `Show`able structure
+    let display = path.display();
+    println!("{:?}", display);
+
+    let meta = path.metadata();
+    println!("metadata: {:?}", meta);
+    match meta {
+        Ok(m) => {
+            println!("{:?}", m);
+            println!("file_type: {:?}", m.file_type());
+            println!("is_dir: {:?}", m.is_dir());
+            println!("is_file: {:?}", m.is_file());
+            println!("permissions: {:?}", m.permissions());
+            println!("modified: {:?}", m.modified());
+            println!("accessed: {:?}", m.accessed());
+            println!("created: {:?}", m.created());
+        }
+        Err(r) => panic!("path {:?} is not valid", path),
+    }
+
+    // `join` merges a path with a byte container using the OS specific separator, and returns the new path
+    let new_path = path.join("a").join("b");
+    match new_path.to_str() {
+        None => panic!("new path is not a valid UTF-8 sequence"),
+        Some(s) => println!("new path is {}", s),
+    }
 }
 
 fn show_channels() {
