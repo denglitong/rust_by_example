@@ -18,6 +18,7 @@
 
 #![allow(dead_code)]
 use std::error::Error;
+use std::f32::consts::E;
 use std::fs::{File, OpenOptions};
 use std::io::{BufRead, Read, Write};
 use std::path::Path;
@@ -25,7 +26,7 @@ use std::process::{Command, Stdio};
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
 use std::thread::JoinHandle;
-use std::{io, thread, time};
+use std::{fs, io, thread, time};
 
 static NTHREADS: u32 = 3;
 
@@ -49,7 +50,84 @@ fn main() {
     // show_file_read_lines();
     // show_child_process();
     // show_pipes();
-    show_process_wait();
+    // show_process_wait();
+    show_fs_operation();
+}
+
+// Filesystem operations, std::Fs
+fn show_fs_operation() {
+    println!("`mkdir a`");
+    match fs::create_dir("a") {
+        Err(why) => println!("! {:?}", why.kind()),
+        Ok(_) => {}
+    }
+
+    println!("`echo hello > a/b.txt`");
+    echo("hello", &Path::new("a/b.txt")).unwrap_or_else(|why| {
+        println!("! {:?}", why.kind());
+    });
+
+    println!("`mkdir -p a/c/d`");
+    // recursively create dir, returns `io::Result<()>`
+    fs::create_dir_all("a/c/d").unwrap_or_else(|why| {
+        println!("! {:?}", why.kind());
+    });
+
+    println!("`touch a/c/e.txt`");
+    touch(&Path::new("a/c/e.txt")).unwrap_or_else(|why| {
+        println!("! {:?}", why.kind());
+    });
+
+    // not found std::io::unix::fs; crate
+    //    println!("`ln -s ../b.txt a/c/b.txt`");
+    //    if cfg!(target_family = "unix") {
+    //        unix::fs::symlink("../b.txt", "a/c/b.txt").unwrap_or_else(|why| {
+    //            println!("! {:?}", why.kind());
+    //        });
+    //    }
+
+    println!("`ls a`");
+    match fs::read_dir("a") {
+        Err(why) => println!("! {:?}", why.kind()),
+        Ok(paths) => {
+            for path in paths {
+                println!("> {:?}", path.unwrap().path());
+            }
+        }
+    }
+
+    println!("`rm a/c/e.txt`");
+    fs::remove_file("a/c/e.txt").unwrap_or_else(|why| {
+        println!("! {:?}", why.kind());
+    });
+
+    println!("`rmdir a/c/d`");
+    fs::remove_dir("a/c/d").unwrap_or_else(|why| {
+        println!("! {:?}", why.kind());
+    });
+}
+
+// a simple implementation of `# cat path`
+fn cat(path: &Path) -> io::Result<String> {
+    let mut f = File::open(path)?;
+    let mut s = String::new();
+    match f.read_to_string(&mut s) {
+        Ok(_) => Ok(s),
+        Err(why) => Err(why),
+    }
+}
+
+// a simple implementation of `# echo s > path`
+fn echo(s: &str, path: &Path) -> io::Result<()> {
+    let mut f = File::create(&path)?;
+    f.write_all(s.as_bytes())
+}
+
+fn touch(path: &Path) -> io::Result<()> {
+    match OpenOptions::new().create(true).write(true).open(path) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(e),
+    }
 }
 
 fn show_process_wait() {
