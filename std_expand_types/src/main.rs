@@ -26,7 +26,7 @@ use std::process::{Command, Stdio};
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
 use std::thread::JoinHandle;
-use std::{fs, io, thread, time};
+use std::{env, fs, io, thread, time};
 
 static NTHREADS: u32 = 3;
 
@@ -51,7 +51,17 @@ fn main() {
     // show_child_process();
     // show_pipes();
     // show_process_wait();
-    show_fs_operation();
+    // show_fs_operation();
+    show_program_arguments();
+}
+
+fn show_program_arguments() {
+    // type annotation is need
+    let args: Vec<String> = env::args().collect();
+
+    println!("My path is {}.", args[0]);
+
+    println!("i got {:?} arguments: {:?}", args.len() - 1, &args[1..]);
 }
 
 // Filesystem operations, std::Fs
