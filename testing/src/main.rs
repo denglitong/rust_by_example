@@ -1,7 +1,8 @@
 // Rust testing comes in three styles:
-// Unit testing
+// Unit testing: testing one module in isolation at a time, they're small and can test private code
 // Doc testing
-// Integration testing
+// Integration testing: external to your crate and use only crate public interface as any other code would
+// integration testing is to test that many parts of your library work correctly together.
 
 mod lib;
 
