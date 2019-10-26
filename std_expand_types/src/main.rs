@@ -19,10 +19,13 @@
 #![allow(dead_code)]
 use std::error::Error;
 use std::f32::consts::E;
+use std::fmt;
+use std::fmt::Formatter;
 use std::fs::{File, OpenOptions};
 use std::io::{BufRead, Read, Write};
 use std::path::Path;
 use std::process::{Command, Stdio};
+use std::rc::Rc;
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
 use std::thread::JoinHandle;
@@ -39,6 +42,51 @@ cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
 proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 ";
 
+// FFI(Foreign Function Interface)
+// Rust provides a FFI to C libraries. Foreign function must be declared inside an extern block
+// annotated with a #[link] attribute containing the name of the foreign library
+
+// minimal implementation of single precision complex numbers
+#[repr(C)]
+#[derive(Copy, Clone)]
+struct Complex {
+    re: f32,
+    im: f32,
+}
+
+impl fmt::Debug for Complex {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        if self.im < 0. {
+            write!(f, "{}-{}i", self.re, -self.im)
+        } else {
+            write!(f, "{}+{}i", self.re, self.im)
+        }
+    }
+}
+
+// this extern block links to the libm library
+#[link(name = "m")]
+extern "C" {
+    // this is a foreign function that computes the square root of a single precision complex number
+    fn csqrtf(z: Complex) -> Complex;
+    fn ccosf(z: Complex) -> Complex;
+}
+
+// since calling foreign functions is considered unsafe, it's common to write safe wrappers around them.
+fn cos(z: Complex) -> Complex {
+    unsafe { ccosf(z) }
+}
+
+fn show_ffi() {
+    let z = Complex { re: -1., im: 0. };
+    // calling a foreign function is an unsafe operation
+    let z_sqrt = unsafe { csqrtf(z) };
+    println!("the square root of {:?} is {:?}", &z, z_sqrt);
+
+    // calling safe API wrapped around unsafe function
+    println!("cos({:?}) = {:?}", &z, cos(z));
+}
+
 // This is the `main` thread
 fn main() {
     // show_threads_simple();
@@ -53,7 +101,8 @@ fn main() {
     // show_process_wait();
     // show_fs_operation();
     // show_program_arguments();
-    show_arguments_parsing();
+    // show_arguments_parsing();
+    show_ffi();
 }
 
 fn show_arguments_parsing() {
