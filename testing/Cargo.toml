@@ -7,3 +7,8 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+
+# Sometimes there is a need to have a dependencies for tests only
+# (et., benchmarks), such dependicies added to Cargo.toml in [dev-denpencies]
+[dev-dependencies]
+pretty_assertions = "0.4.0"

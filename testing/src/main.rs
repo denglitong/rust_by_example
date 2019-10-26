@@ -5,6 +5,7 @@
 // integration testing is to test that many parts of your library work correctly together.
 
 mod lib;
+mod pretty_assertions;
 
 pub fn add(a: i32, b: i32) -> i32 {
     a + b
@@ -65,4 +66,5 @@ mod tests {
 
 fn main() {
     println!("Hello, world!");
+    lib::add(2, 3);
 }
